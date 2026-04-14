@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Service Full Documentation</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b1220;
+            color: #e5e7eb;
+            padding: 20px;
+        }
+
+        h1,
+        h2 {
+            color: #38bdf8;
+        }
+
+        .section {
+            margin-bottom: 60px;
+            padding: 20px;
+            background: #0f172a;
+            border-radius: 10px;
+            border: 1px solid #334155;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            border: 1px solid #334155;
+            padding: 10px;
+            vertical-align: top;
+        }
+
+        th {
+            background: #1e293b;
+            color: #38bdf8;
+        }
+
+        .subtitle {
+            color: #22c55e;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        pre {
+            background: #1e293b;
+            padding: 10px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>📄 Chat Service API (v1alpha) - FULL PROTO DOCUMENTATION</h1>
+
+    <!-- ========================================================= -->
+    <!-- USER -->
+    <!-- ========================================================= -->
+    <div class="section">
+        <h2>👤 User</h2>
+        <table>
+            <tr>
+                <th>Campo</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td>string</td>
+                <td>ID usuario</td>
+            </tr>
+            <tr>
+                <td>name</td>
+                <td>string</td>
+                <td>Nombre usuario</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- ENUM -->
+    <!-- ========================================================= -->
+    <div class="section">
+        <h2>⚙️ MessageType</h2>
+        <table>
+            <tr>
+                <th>Valor</th>
+                <th>Descripción</th>
+            </tr>
+            <tr>
+                <td>TEXT</td>
+                <td>Texto</td>
+            </tr>
+            <tr>
+                <td>IMAGE</td>
+                <td>Imagen</td>
+            </tr>
+            <tr>
+                <td>VIDEO</td>
+                <td>Video</td>
+            </tr>
+            <tr>
+                <td>AUDIO</td>
+                <td>Audio</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- ENCRYPTED KEY -->
+    <!-- ========================================================= -->
+    <div class="section">
+        <h2>🔐 EncryptedKey</h2>
+        <table>
+            <tr>
+                <th>Campo</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+            </tr>
+            <tr>
+                <td>device_id</td>
+                <td>string</td>
+                <td>ID dispositivo</td>
+            </tr>
+            <tr>
+                <td>encrypted_key</td>
+                <td>string</td>
+                <td>Clave cifrada</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- CHAT MESSAGE RESPONSE -->
+    <!-- ========================================================= -->
+    <div class="section">
+        <h2>💬 ChatMessageResponse</h2>
+
+        <table>
+            <tr>
+                <th>Campo</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td>string</td>
+                <td>ID mensaje</td>
+            </tr>
+            <tr>
+                <td>chat_id</td>
+                <td>string</td>
+                <td>ID chat</td>
+            </tr>
+            <tr>
+                <td>sender</td>
+                <td>User</td>
+                <td>Usuario</td>
+            </tr>
+            <tr>
+                <td>message_type</td>
+                <td>MessageType</td>
+                <td>Tipo mensaje</td>
+            </tr>
+            <tr>
+                <td>message</td>
+                <td>string</td>
+                <td>Texto</td>
+            </tr>
+            <tr>
+                <td>ciphertext</td>
+                <td>string</td>
+                <td>Cifrado</td>
+            </tr>
+            <tr>
+                <td>source</td>
+                <td>string</td>
+                <td>Media URL</td>
+            </tr>
+            <tr>
+                <td>created_at</td>
+                <td>timestamp</td>
+                <td>Creación</td>
+            </tr>
+            <tr>
+                <td>updated_at</td>
+                <td>timestamp</td>
+                <td>Actualización</td>
+            </tr>
+            <tr>
+                <td>response_msg_id</td>
+                <td>string</td>
+                <td>Reply ID</td>
+            </tr>
+            <tr>
+                <td>deleted_by</td>
+                <td>string[]</td>
+                <td>Usuarios borraron</td>
+            </tr>
+            <tr>
+                <td>keys</td>
+                <td>EncryptedKey[]</td>
+                <td>Claves</td>
+            </tr>
+            <tr>
+                <td>conversation_id</td>
+                <td>string</td>
+                <td>Conversación</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- SEND MESSAGE -->
+    <!-- ========================================================= -->
+    <div class="section">
+        <h2>✉️ SendMessage</h2>
+        <p><b>Socket:</b> chat.send_message</p>
+
+        <h3>REQUEST</h3>
+        <table>
+            <tr>
+                <th>Campo</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+            </tr>
+            <tr>
+                <td>chat_id</td>
+                <td>string</td>
+                <td>ID chat</td>
+            </tr>
+            <tr>
+                <td>user_id</td>
+                <td>string</td>
+                <td>ID usuario</td>
+            </tr>
+            <tr>
+                <td>message_type</td>
+                <td>MessageType</td>
+                <td>Tipo mensaje</td>
+            </tr>
+            <tr>
+                <td>message</td>
+                <td>string</td>
+                <td>Texto</td>
+            </tr>
+            <tr>
+                <td>source</td>
+                <td>string</td>
+                <td>Media URL</td>
+            </tr>
+            <tr>
+                <td>response_msg_id</td>
+                <td>string</td>
+                <td>Reply</td>
+            </tr>
+            <tr>
+                <td>keys</td>
+                <td>EncryptedKey[]</td>
+                <td>Claves</td>
+            </tr>
+            <tr>
+                <td>conversation_id</td>
+                <td>string</td>
+                <td>Conversación</td>
+            </tr>
+        </table>
+
+        <pre>{
+  "chat_id": "chat123",
+  "user_id": "user1",
+  "message_type": "TEXT",
+  "message": "hola",
+  "source": "",
+  "response_msg_id": "",
+  "keys": [
+    {
+      "device_id": "dev1",
+      "encrypted_key": "abc"
+    }
+  ],
+  "conversation_id": "conv1"
+}</pre>
+
+        <h3>RESPONSE</h3>
+        <table>
+            <tr>
+                <th>Campo</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+            </tr>
+            <tr>
+                <td colspan="3">ChatMessageResponse completo (ver sección arriba)</td>
+            </tr>
+        </table>
+
+        <pre>{
+  "id": "msg1",
+  "chat_id": "chat123",
+  "sender": {
+    "id": "user1",
+    "name": "Juan"
+  },
+  "message_type": "TEXT",
+  "message": "hola",
+  "ciphertext": "",
+  "source": "",
+  "created_at": "2026-04-13T10:00:00Z",
+  "updated_at": "2026-04-13T10:00:00Z",
+  "response_msg_id": "",
+  "deleted_by": [],
+  "keys": [
+    {
+      "device_id": "dev1",
+      "encrypted_key": "abc"
+    }
+  ],
+  "conversation_id": "conv1"
+}</pre>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- JOIN CHAT -->
+    <!-- ========================================================= -->
+    <div class="section">
+        <h2>🟢 JoinChat</h2>
+        <p><b>Socket:</b> <code>chat.join_chat</code</p>
+
+
+    <h3>REQUEST</h3>
+    <table>
+      <tr>
+        <th>Campo</th>
+        <th>Tipo</th>
+        <th>Descripción</th>
+      </tr>
+      <tr>
+        <td>chat_id</td>
+        <td>string</td>
+        <td>ID chat</td>
+      </tr>
+      <tr>
+        <td>user_id</td>
+        <td>string</td>
+        <td>ID usuario</td>
+      </tr>
+    </table>
+
+    <pre>{
+  "chat_id": "chat123",
+  "user_id": "user1"
+}</pre>
+
+    <h3>RESPONSE</h3>
+    <table>
+      <tr>
+        <th>Campo</th>
+        <th>Tipo</th>
+        <th>Descripción</th>
+      </tr>
+      <tr>
+        <td>status</td>
+        <td>bool</td>
+        <td>Estado conexión</td>
+      </tr>
+      <tr>
+        <td>history</td>
+        <td>ChatMessageResponse[]</td>
+        <td>Historial completo</td>
+      </tr>
+    </table>
+
+    <pre>{
+  "status": true,
+  "history": [
+    {
+      "id": "msg1",
+      "chat_id": "chat123",
+      "sender": {
+        "id": "user1",
+        "name": "Juan"
+      },
+      "message_type": "TEXT",
+      "message": "hola",
+      "ciphertext": "",
+      "source": "",
+      "created_at": "2026-04-13T10:00:00Z",
+      "updated_at": "2026-04-13T10:00:00Z",
+      "response_msg_id": "",
+      "deleted_by": [],
+      "keys": [],
+      "conversation_id": "conv1"
+    }
+  ]
+}</pre>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- LOAD MORE -->
+  <!-- ========================================================= -->
+  <div class="section">
+    <h2>📜 LoadMoreMessages</h2>
+
+    <h3>REQUEST</h3>
+    <table>
+      <tr>
+        <th>Campo</th>
+        <th>Tipo</th>
+        <th>Descripción</th>
+      </tr>
+      <tr>
+        <td>chat_id</td>
+        <td>string</td>
+        <td>ID chat</td>
+      </tr>
+      <tr>
+        <td>user_id</td>
+        <td>string</td>
+        <td>ID usuario</td>
+      </tr>
+      <tr>
+        <td>before_date</td>
+        <td>string</td>
+        <td>ISO8601</td>
+      </tr>
+    </table>
+
+    <pre>{
+  "chat_id": "chat123",
+  "user_id": "user1",
+  "before_date": "2026-04-13T10:00:00Z"
+}</pre>
+
+    <h3>RESPONSE</h3>
+
+    <table>
+      <tr>
+        <th>Campo</th>
+        <th>Tipo</th>
+        <th>Descripción</th>
+      </tr>
+      <tr>
+        <td>messages</td>
+        <td>ChatMessageResponse[]</td>
+        <td>Mensajes anteriores</td>
+      </tr>
+    </table>
+
+    <pre>{
+  "messages": [
+    {
+      "id": "msg1",
+      "chat_id": "chat123",
+      "sender": {
+        "id": "user1",
+        "name": "Juan"
+      },
+      "message_type": "TEXT",
+      "message": "hola",
+      "ciphertext": "",
+      "source": "",
+      "created_at": "2026-04-13T10:00:00Z",
+      "updated_at": "2026-04-13T10:00:00Z",
+      "response_msg_id": "",
+      "deleted_by": [],
+      "keys": [],
+      "conversation_id": "conv1"
+    }
+  ]
+}</pre>
+  </div>
+
+
+  <div class="section">
+    <h2>📡 SubscribeToChat (STREAM)</h2>
+
+    <p><b>Socket:</b> chat.subscribe_to_chat</p>
+
+    <h3>REQUEST</h3>
+    <table>
+      <tr>
+        <th>Campo</th>
+        <th>Tipo</th>
+        <th>Descripción</th>
+      </tr>
+      <tr>
+        <td>chat_id</td>
+        <td>string</td>
+        <td>ID del chat</td>
+      </tr>
+      <tr>
+        <td>user_id</td>
+        <td>string</td>
+        <td>ID usuario</td>
+      </tr>
+    </table>
+
+    <pre>{
+  "chat_id": "chat123",
+  "user_id": "user1"
+}</pre>
+
+    <h3>STREAM RESPONSE (ChatEvent)</h3>
+
+    <table>
+      <tr>
+        <th>Tipo de evento</th>
+        <th>Descripción</th>
+      </tr>
+      <tr>
+        <td>new_message</td>
+        <td>Nuevo mensaje en tiempo real</td>
+      </tr>
+      <tr>
+        <td>user_typing</td>
+        <td>Usuario escribiendo</td>
+      </tr>
+      <tr>
+        <td>user_stopped_typing</td>
+        <td>Usuario dejó de escribir</td>
+      </tr>
+      <tr>
+        <td>user_joined</td>
+        <td>Usuario entró al chat</td>
+      </tr>
+      <tr>
+        <td>user_left</td>
+        <td>Usuario salió del chat</td>
+      </tr>
+      <tr>
+        <td>message_edited</td>
+        <td>Mensaje editado</td>
+      </tr>
+      <tr>
+        <td>message_deleted</td>
+        <td>Mensaje eliminado</td>
+      </tr>
+    </table>
+
+    <h3>EVENT EXAMPLE (new_message)</h3>
+    <pre>{
+  "new_message": {
+    "id": "msg1",
+    "chat_id": "chat123",
+    "sender": {
+      "id": "user1",
+      "name": "Juan"
+    },
+    "message_type": "TEXT",
+    "message": "hola en vivo",
+    "ciphertext": "",
+    "source": "",
+    "created_at": "2026-04-13T10:00:00Z",
+    "updated_at": "2026-04-13T10:00:00Z",
+    "response_msg_id": "",
+    "deleted_by": [],
+    "keys": [],
+    "conversation_id": "conv1"
+  }
+}</pre>
+
+  </div>
+
+
+  <div class="section">
+    <h2>🌍 SubscribeGlobal (STREAM)</h2>
+
+    <p><b>Socket:</b> chat.subscribe_global</p>
+
+    <h3>REQUEST</h3>
+    <table>
+      <tr>
+        <th>Campo</th>
+        <th>Tipo</th>
+        <th>Descripción</th>
+      </tr>
+      <tr>
+        <td>user_id</td>
+        <td>string</td>
+        <td>ID usuario</td>
+      </tr>
+    </table>
+
+    <pre>{
+  "user_id": "user1"
+}</pre>
+
+    <h3>STREAM RESPONSE (GlobalEvent)</h3>
+
+    <table>
+      <tr>
+        <th>Evento</th>
+        <th>Descripción</th>
+      </tr>
+      <tr>
+        <td>chat_list_updated</td>
+        <td>Nuevo chat o actualización de lista</td>
+      </tr>
+    </table>
+
+    <h3>EVENT EXAMPLE</h3>
+    <pre>{
+  "chat_list_updated": {
+    "chat_id": "chat123"
+  }
+}</pre>
+
+  </div>
+
+
+  <div class="section">
+    <h2>✏️ EditMessage</h2>
+
+    <p><b>Socket:</b> chat.edit_message</p>
+
+    <h3>REQUEST</h3>
+    <table>
+      <tr>
+        <th>Campo</th>
+        <th>Tipo</th>
+        <th>Descripción</th>
+      </tr>
+      <tr>
+        <td>message_id</td>
+        <td>string</td>
+        <td>ID mensaje</td>
+      </tr>
+      <tr>
+        <td>new_message</td>
+        <td>string</td>
+        <td>Nuevo contenido</td>
+      </tr>
+    </table>
+
+    <pre>{
+  "message_id": "msg1",
+  "new_message": "editado"
+}</pre>
+
+    <h3>RESPONSE</h3>
+    <table>
+      <tr>
+        <th>Campo</th>
+        <th>Tipo</th>
+        <th>Descripción</th>
+      </tr>
+      <tr>
+        <td colspan="3">ChatMessageResponse completo (igual sección principal)</td>
+      </tr>
+    </table>
+
+    <pre>{
+  "id": "msg1",
+  "chat_id": "chat123",
+  "sender": {
+    "id": "user1",
+    "name": "Juan"
+  },
+  "message_type": "TEXT",
+  "message": "editado",
+  "ciphertext": "",
+  "source": "",
+  "created_at": "2026-04-13T10:00:00Z",
+  "updated_at": "2026-04-13T10:05:00Z",
+  "response_msg_id": "",
+  "deleted_by": [],
+  "keys": [],
+  "conversation_id": "conv1"
+}</pre>
+
+  </div>
+
+
+
+  <div class="section">
+    <h2>❌ DeleteMessage</h2>
+
+    <h3>REQUEST</h3>
+    <table>
+      <tr>
+        <th>Campo</th>
+        <th>Tipo</th>
+        <th>Descripción</th>
+      </tr>
+      <tr>
+        <td>message_id</td>
+        <td>string</td>
+        <td>ID mensaje</td>
+      </tr>
+      <tr>
+        <td>user_id</td>
+        <td>string</td>
+        <td>ID usuario</td>
+      </tr>
+    </table>
+
+    <pre>{
+  "message_id": "msg1",
+  "user_id": "user1"
+}</pre>
+
+    <h3>RESPONSE</h3>
+    <table>
+      <tr>
+        <th>Campo</th>
+        <th>Tipo</th>
+        <th>Descripción</th>
+      </tr>
+      <tr>
+        <td>status</td>
+        <td>bool</td>
+        <td>Resultado operación</td>
+      </tr>
+    </table>
+
+    <pre>{
+  "status": true
+}</pre>
+
+  </div>
+
+  <div class="section">
+    <h2>⌨️ StartTyping / StopTyping</h2>
+
+    <h3>REQUEST</h3>
+    <table>
+      <tr>
+        <th>Campo</th>
+        <th>Tipo</th>
+        <th>Descripción</th>
+      </tr>
+      <tr>
+        <td>chat_id</td>
+        <td>string</td>
+        <td>ID chat</td>
+      </tr>
+      <tr>
+        <td>user_id</td>
+        <td>string</td>
+        <td>ID usuario</td>
+      </tr>
+    </table>
+
+    <pre>{
+  "chat_id": "chat123",
+  "user_id": "user1"
+}</pre>
+
+    <h3>RESPONSE</h3>
+    <table>
+      <tr>
+        <th>Campo</th>
+        <th>Tipo</th>
+        <th>Descripción</th>
+      </tr>
+      <tr>
+        <td>status</td>
+        <td>bool</td>
+        <td>Resultado</td>
+      </tr>
+    </table>
+
+    <pre>{
+  "status": true
+}</pre>
+
+  </div>
+
+  <div class="section">
+    <h2>📜 LoadMoreMessages</h2>
+
+    <h3>REQUEST</h3>
+    <table>
+      <tr>
+        <th>Campo</th>
+        <th>Tipo</th>
+        <th>Descripción</th>
+      </tr>
+      <tr>
+        <td>chat_id</td>
+        <td>string</td>
+        <td>ID chat</td>
+      </tr>
+      <tr>
+        <td>user_id</td>
+        <td>string</td>
+        <td>ID usuario</td>
+      </tr>
+      <tr>
+        <td>before_date</td>
+        <td>string</td>
+        <td>ISO8601 timestamp</td>
+      </tr>
+    </table>
+
+    <pre>{
+  "chat_id": "chat123",
+  "user_id": "user1",
+  "before_date": "2026-04-13T10:00:00Z"
+}</pre>
+
+    <h3>RESPONSE</h3>
+    <table>
+      <tr>
+        <th>Campo</th>
+        <th>Tipo</th>
+        <th>Descripción</th>
+      </tr>
+      <tr>
+        <td>messages</td>
+        <td>ChatMessageResponse[]</td>
+        <td>Mensajes históricos</td>
+      </tr>
+    </table>
+
+    <pre>{
+  "messages": [
+    {
+      "id": "msg1",
+      "chat_id": "chat123",
+      "sender": {
+        "id": "user1",
+        "name": "Juan"
+      },
+      "message_type": "TEXT",
+      "message": "hola",
+      "ciphertext": "",
+      "source": "",
+      "created_at": "2026-04-13T10:00:00Z",
+      "updated_at": "2026-04-13T10:00:00Z",
+      "response_msg_id": "",
+      "deleted_by": [],
+      "keys": [],
+      "conversation_id": "conv1"
+    }
+  ]
+}</pre>
+
+  </div>
+
+  
+
+</body>
+
+</html>
