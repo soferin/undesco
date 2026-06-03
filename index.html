@@ -270,9 +270,14 @@
         <td>Claves</td>
       </tr>
       <tr>
-        <td>conversation_id</td>
+        <td>nonce</td>
         <td>string</td>
-        <td>Conversación</td>
+        <td>nonce</td>
+      </tr>
+        <tr>
+        <td>sender_device_id</td>
+        <td>string</td>
+        <td>sender device</td>
       </tr>
     </table>
 
@@ -289,7 +294,8 @@
       "encrypted_key": "abc"
     }
   ],
-  "conversation_id": "conv1"
+  "nonce":"string",
+  "sender_device_id":"string"
 }</pre>
 
     <h3>RESPONSE</h3>
@@ -530,7 +536,8 @@
     "response_msg_id": "",
     "deleted_by": [],
     "keys": [],
-    "conversation_id": "conv1"
+    "nonce": "string",
+    "sender_device_id":"string"
   }
 }</pre>
 
