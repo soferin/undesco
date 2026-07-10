@@ -1007,7 +1007,197 @@
 </div>
 
 
-  
+
+<div class="container">
+
+<h1>Evento WebSocket: <code>chat.message</code></h1>
+
+    <p>
+      El evento <strong>chat.message</strong> se emite cuando un usuario envía un nuevo
+      mensaje dentro de una conversación.
+    </p>
+
+    <p>
+      Este evento es recibido tanto por el <strong>emisor</strong> como por el
+      <strong>destinatario</strong>, permitiendo mantener sincronizada la conversación
+      en tiempo real.
+    </p>
+
+    <p>
+      <span class="badge">type: response</span>
+    </p>
+
+    <h2>Estructura de la respuesta</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Campo</th>
+          <th>Tipo</th>
+          <th>Descripción</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr>
+          <td>type</td>
+          <td>string</td>
+          <td>Tipo del evento. Para este caso siempre será <code>response</code>.</td>
+        </tr>
+
+        <tr>
+          <td>payload.chat_id</td>
+          <td>string</td>
+          <td>Identificador único del chat.</td>
+        </tr>
+
+        <tr>
+          <td>payload.id</td>
+          <td>string</td>
+          <td>Identificador único del mensaje.</td>
+        </tr>
+
+        <tr>
+          <td>payload.ciphertext</td>
+          <td>string</td>
+          <td>Contenido cifrado del mensaje.</td>
+        </tr>
+
+        <tr>
+          <td>payload.message</td>
+          <td>string</td>
+          <td>Contenido del mensaje en texto plano. Puede venir vacío cuando el mensaje se transmite cifrado.</td>
+        </tr>
+
+        <tr>
+          <td>payload.message_type</td>
+          <td>string</td>
+          <td>Tipo de mensaje (TEXT, IMAGE, VIDEO, FILE, AUDIO, etc.).</td>
+        </tr>
+
+        <tr>
+          <td>payload.keys</td>
+          <td>object | null</td>
+          <td>Claves necesarias para el proceso de descifrado del mensaje.</td>
+        </tr>
+
+        <tr>
+          <td>payload.nonce</td>
+          <td>string</td>
+          <td>Valor criptográfico (Nonce) utilizado durante el cifrado.</td>
+        </tr>
+
+        <tr>
+          <td>payload.response_msg_id</td>
+          <td>string</td>
+          <td>Identificador del mensaje al que se está respondiendo.</td>
+        </tr>
+
+        <tr>
+          <td>payload.sender</td>
+          <td>object</td>
+          <td>Información del usuario que envió el mensaje.</td>
+        </tr>
+
+        <tr>
+          <td>payload.sender.user_id</td>
+          <td>string</td>
+          <td>Identificador del usuario.</td>
+        </tr>
+
+        <tr>
+          <td>payload.sender.profile_id</td>
+          <td>string</td>
+          <td>Identificador del perfil.</td>
+        </tr>
+
+        <tr>
+          <td>payload.sender.name</td>
+          <td>string</td>
+          <td>Nombre del usuario que envió el mensaje.</td>
+        </tr>
+
+        <tr>
+          <td>payload.sender.avatar</td>
+          <td>string</td>
+          <td>URL de la fotografía de perfil.</td>
+        </tr>
+
+        <tr>
+          <td>payload.sender_device_id</td>
+          <td>string</td>
+          <td>Identificador del dispositivo desde el que fue enviado el mensaje.</td>
+        </tr>
+
+        <tr>
+          <td>payload.source</td>
+          <td>string</td>
+          <td>Origen del mensaje (si aplica).</td>
+        </tr>
+
+        <tr>
+          <td>payload.deleted_by</td>
+          <td>object | null</td>
+          <td>Información sobre la eliminación del mensaje.</td>
+        </tr>
+
+        <tr>
+          <td>payload.created_at</td>
+          <td>RFC3339 Timestamp</td>
+          <td>Fecha y hora en la que fue creado el mensaje.</td>
+        </tr>
+
+        <tr>
+          <td>payload.updated_at</td>
+          <td>RFC3339 Timestamp</td>
+          <td>Fecha y hora de la última actualización del mensaje.</td>
+        </tr>
+
+      </tbody>
+    </table>
+
+    <h2>Ejemplo de respuesta</h2>
+
+    <pre>{
+  "payload": {
+    "chat_id": "6a022c0a50bf64cf1674e287",
+    "ciphertext": "Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers",
+    "created_at": "2026-07-10T15:34:55.041502252Z",
+    "deleted_by": null,
+    "id": "6a51111f15d684eda84c8127",
+    "keys": null,
+    "message": "",
+    "message_type": "TEXT",
+    "nonce": "",
+    "response_msg_id": "",
+    "sender": {
+      "avatar": "https://storage.googleapis.com/media-temp.cuboconecta.com/avatars/1778611747_media_1778611741324.jpg",
+      "name": "Carlos Santana",
+      "profile_id": "672800e46f4b3358a701fa9d",
+      "user_id": "672800e46f4b3358a701fa9c"
+    },
+    "sender_device_id": "e5ec2158-e46c-49ec-acf0-129c6aafd0ca",
+    "source": "",
+    "updated_at": "0001-01-01T00:00:00Z"
+  },
+  "type": "response"
+}</pre>
+
+    <div class="note">
+      <strong>Nota:</strong><br><br>
+
+      Si el sistema utiliza cifrado de extremo a extremo (E2EE), el cliente deberá
+      descifrar el contenido utilizando los campos
+      <strong>ciphertext</strong>, <strong>keys</strong> y <strong>nonce</strong>.
+      Mientras tanto, el campo <strong>message</strong> puede permanecer vacío.
+    </div>
+
+  </div>
+
+
+
+
 
 </body>
 
