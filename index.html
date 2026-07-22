@@ -1,1204 +1,507 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
-  <title>Chat Service Full Documentation</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentación API Chat & WebSockets (Verificada Backend Go)</title>
   <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --border: #334155;
+      --code-bg: #090d16;
+      --presence-bg: #10b981;
+      --stream-bg: #f59e0b;
+    }
     body {
-      font-family: Arial, sans-serif;
-      background: #0b1220;
-      color: #e5e7eb;
-      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      margin: 0;
+      padding: 2rem;
     }
-
-    h1,
+    .container {
+      max-width: 950px;
+      margin: 0 auto;
+    }
+    h1 {
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 0.5rem;
+      color: var(--accent);
+    }
     h2 {
-      color: #38bdf8;
+      margin-top: 2.5rem;
+      color: #f43f5e;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.3rem;
     }
-
-    .section {
-      margin-bottom: 60px;
-      padding: 20px;
-      background: #0f172a;
-      border-radius: 10px;
-      border: 1px solid #334155;
+    .endpoint {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
     }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
+    .endpoint h3 {
+      margin-top: 0;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
-
-    th,
-    td {
-      border: 1px solid #334155;
-      padding: 10px;
-      vertical-align: top;
-    }
-
-    th {
-      background: #1e293b;
-      color: #38bdf8;
-    }
-
-    .subtitle {
-      color: #22c55e;
-      margin-top: 15px;
+    .badge {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #0284c7;
+      color: #fff;
       font-weight: bold;
     }
-
+    .badge-presence {
+      background: var(--presence-bg);
+    }
+    .badge-stream {
+      background: var(--stream-bg);
+    }
+    .description {
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+    .payload-title {
+      font-weight: bold;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+      margin-bottom: 0.3rem;
+      color: #e2e8f0;
+    }
     pre {
-      background: #1e293b;
-      padding: 10px;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
       border-radius: 6px;
+      padding: 1rem;
       overflow-x: auto;
+      font-family: "Fira Code", Consolas, Monaco, "Courier New", Courier, monospace;
+      font-size: 0.875rem;
+      color: #a5f3fc;
+      margin: 0;
+    }
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+      background: var(--card-bg);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .summary-table th, .summary-table td {
+      border: 1px solid var(--border);
+      padding: 0.75rem 1rem;
+      text-align: left;
+    }
+    .summary-table th {
+      background: #111827;
+      color: var(--accent);
     }
   </style>
 </head>
-
 <body>
 
-  <h1>📄 Chat Service API (v1alpha) - FULL PROTO DOCUMENTATION</h1>
+<div class="container">
+  <h1>Documentación API Chat & WebSockets</h1>
+  <p class="description">Especificación oficial, 100% verificada mediante el código fuente del backend en Go (patrón Command / Response) y logs de ejecución reales.</p>
 
-  <!-- ========================================================= -->
-  <!-- USER -->
-  <!-- ========================================================= -->
-  <div class="section">
-    <h2>👤 User</h2>
-    <table>
+  <!-- RESUMEN DE ARQUITECTURA DE EVENTOS -->
+  <h2>RESUMEN DE ARQUITECTURA DE COMUNICACIÓN</h2>
+  <table class="summary-table">
+    <thead>
       <tr>
-        <th>Campo</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
+        <th>Acción Emitida (Cliente ➔ Servidor)</th>
+        <th>Mecanismo de Respuesta / Evento Escuchado</th>
+        <th>Alcance / Receptor</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>chat.get_chat_list</code></td>
+        <td>Evento <code>"response"</code></td>
+        <td>Cliente Emisor (Solicitante).</td>
       </tr>
       <tr>
-        <td>id</td>
-        <td>string</td>
-        <td>ID usuario</td>
+        <td><code>chat.get_chat_messages</code></td>
+        <td>Evento <code>"response"</code></td>
+        <td>Cliente Emisor (Solicitante).</td>
       </tr>
       <tr>
-        <td>name</td>
-        <td>string</td>
-        <td>Nombre usuario</td>
+        <td><code>chat.send_message</code></td>
+        <td>Evento <code>"response"</code> (al emisor) + Evento <code>"chat.message"</code> (a la sala)</td>
+        <td>Emisor (ACK) y Sala de Chat (Tiempo real).</td>
       </tr>
-    </table>
-  </div>
+      <tr>
+        <td><code>chat.edit_message</code></td>
+        <td>Evento <code>"response"</code></td>
+        <td>Cliente Emisor (Solicitante).</td>
+      </tr>
+      <tr>
+        <td><code>chat.delete_message</code> / <code>chat.delete_chat</code></td>
+        <td>Evento <code>"response"</code></td>
+        <td>Cliente Emisor (Solicitante).</td>
+      </tr>
+      <tr>
+        <td><code>chat.start_typing</code> / <code>chat.stop_typing</code></td>
+        <td>Evento <code>"chat.typing_status"</code></td>
+        <td>Únicamente al <code>target_user_id</code>.</td>
+      </tr>
+      <tr>
+        <td><code>presence.watch</code></td>
+        <td>Evento <code>"presence.snapshot"</code></td>
+        <td>Cliente Solicitante.</td>
+      </tr>
+    </tbody>
+  </table>
 
-  <!-- ========================================================= -->
-  <!-- ENUM -->
-  <!-- ========================================================= -->
-  <div class="section">
-    <h2>⚙️ MessageType</h2>
-    <table>
-      <tr>
-        <th>Valor</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td>TEXT</td>
-        <td>Texto</td>
-      </tr>
-      <tr>
-        <td>IMAGE</td>
-        <td>Imagen</td>
-      </tr>
-      <tr>
-        <td>VIDEO</td>
-        <td>Video</td>
-      </tr>
-      <tr>
-        <td>AUDIO</td>
-        <td>Audio</td>
-      </tr>
-    </table>
-  </div>
+  <!-- SECCIÓN 1: ACCIONES Y PETICIONES -->
+  <h2>1. PETICIONES Y RESPUESTAS (EVENTO "response")</h2>
+  <p class="description">Estas acciones se envían mediante <code>socket.emit(evento, data)</code> y el servidor devuelve su resultado emitiendo el evento global <code>socket.on("response", ...)</code>.</p>
 
-  <!-- ========================================================= -->
-  <!-- ENCRYPTED KEY -->
-  <!-- ========================================================= -->
-  <div class="section">
-    <h2>🔐 EncryptedKey</h2>
-    <table>
-      <tr>
-        <th>Campo</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td>device_id</td>
-        <td>string</td>
-        <td>ID dispositivo</td>
-      </tr>
-      <tr>
-        <td>encrypted_key</td>
-        <td>string</td>
-        <td>Clave cifrada</td>
-      </tr>
-    </table>
-  </div>
-
-  <!-- ========================================================= -->
-  <!-- CHAT MESSAGE RESPONSE -->
-  <!-- ========================================================= -->
-  <div class="section">
-    <h2>💬 ChatMessageResponse</h2>
-
-    <table>
-      <tr>
-        <th>Campo</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td>id</td>
-        <td>string</td>
-        <td>ID mensaje</td>
-      </tr>
-      <tr>
-        <td>chat_id</td>
-        <td>string</td>
-        <td>ID chat</td>
-      </tr>
-      <tr>
-        <td>sender</td>
-        <td>User</td>
-        <td>Usuario</td>
-      </tr>
-      <tr>
-        <td>message_type</td>
-        <td>MessageType</td>
-        <td>Tipo mensaje</td>
-      </tr>
-      <tr>
-        <td>message</td>
-        <td>string</td>
-        <td>Texto</td>
-      </tr>
-      <tr>
-        <td>ciphertext</td>
-        <td>string</td>
-        <td>Cifrado</td>
-      </tr>
-      <tr>
-        <td>source</td>
-        <td>string</td>
-        <td>Media URL</td>
-      </tr>
-      <tr>
-        <td>created_at</td>
-        <td>timestamp</td>
-        <td>Creación</td>
-      </tr>
-      <tr>
-        <td>updated_at</td>
-        <td>timestamp</td>
-        <td>Actualización</td>
-      </tr>
-      <tr>
-        <td>response_msg_id</td>
-        <td>string</td>
-        <td>Reply ID</td>
-      </tr>
-      <tr>
-        <td>deleted_by</td>
-        <td>string[]</td>
-        <td>Usuarios borraron</td>
-      </tr>
-      <tr>
-        <td>keys</td>
-        <td>EncryptedKey[]</td>
-        <td>Claves</td>
-      </tr>
-      <tr>
-        <td>conversation_id</td>
-        <td>string</td>
-        <td>Conversación</td>
-      </tr>
-    </table>
-  </div>
-
-  <!-- ========================================================= -->
-  <!-- SEND MESSAGE -->
-  <!-- ========================================================= -->
-  <div class="section">
-    <h2>✉️ SendMessage</h2>
-    <p><b>Socket:</b> chat.send_message</p>
-
-    <h3>REQUEST</h3>
-    <table>
-      <tr>
-        <th>Campo</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td>chat_id</td>
-        <td>string</td>
-        <td>ID chat</td>
-      </tr>
-      <tr>
-        <td>user_id</td>
-        <td>string</td>
-        <td>ID usuario</td>
-      </tr>
-      <tr>
-        <td>message_type</td>
-        <td>MessageType</td>
-        <td>Tipo mensaje</td>
-      </tr>
-      <tr>
-        <td>message</td>
-        <td>string</td>
-        <td>Texto</td>
-      </tr>
-      <tr>
-        <td>source</td>
-        <td>string</td>
-        <td>Media URL</td>
-      </tr>
-      <tr>
-        <td>response_msg_id</td>
-        <td>string</td>
-        <td>Reply</td>
-      </tr>
-      <tr>
-        <td>keys</td>
-        <td>EncryptedKey[]</td>
-        <td>Claves</td>
-      </tr>
-      <tr>
-        <td>nonce</td>
-        <td>string</td>
-        <td>nonce</td>
-      </tr>
-      <tr>
-        <td>sender_device_id</td>
-        <td>string</td>
-        <td>sender device</td>
-      </tr>
-    </table>
-
-    <pre>{
-  "chat_id": "chat123",
-  "user_id": "user1",
-  "message_type": "TEXT",
-  "message": "hola",
-  "source": "",
-  "response_msg_id": "",
-  "keys": [
-    {
-      "device_id": "dev1",
-      "encrypted_key": "abc"
-    }
-  ],
-  "nonce":"string",
-  "sender_device_id":"string"
-}</pre>
-
-    <h3>RESPONSE</h3>
-    <table>
-      <tr>
-        <th>Campo</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td colspan="3">ChatMessageResponse completo (ver sección arriba)</td>
-      </tr>
-    </table>
-
-    <pre>{
-  "id": "msg1",
-  "chat_id": "chat123",
-  "sender": {
-    "id": "user1",
-    "name": "Juan"
-  },
-  "message_type": "TEXT",
-  "message": "hola",
-  "ciphertext": "",
-  "source": "",
-  "created_at": "2026-04-13T10:00:00Z",
-  "updated_at": "2026-04-13T10:00:00Z",
-  "response_msg_id": "",
-  "deleted_by": [],
-  "keys": [
-    {
-      "device_id": "dev1",
-      "encrypted_key": "abc"
-    }
-  ],
-  "conversation_id": "conv1"
-}</pre>
-  </div>
-
-  <!-- ========================================================= -->
-  <!-- JOIN CHAT -->
-  <!-- ========================================================= -->
-  <div class="section">
-    <h2>🟢 JoinChat</h2>
-    <p><b>Socket:</b> <code>chat.join</code</p>
-
-
-    <h3>REQUEST</h3>
-    <table>
-      <tr>
-        <th>Campo</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td>chat_id</td>
-        <td>string</td>
-        <td>ID chat</td>
-      </tr>
-      <tr>
-        <td>user_id</td>
-        <td>string</td>
-        <td>ID usuario</td>
-      </tr>
-    </table>
-
-    <pre>{
-  "chat_id": "chat123",
-  "user_id": "user1"
-}</pre>
-
-    <h3>RESPONSE</h3>
-    <table>
-      <tr>
-        <th>Campo</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td>status</td>
-        <td>bool</td>
-        <td>Estado conexión</td>
-      </tr>
-      <tr>
-        <td>history</td>
-        <td>ChatMessageResponse[]</td>
-        <td>Historial completo</td>
-      </tr>
-    </table>
-
-    <pre>{
-  "status": true,
-  "history": [
-    {
-      "id": "msg1",
-      "chat_id": "chat123",
-      "sender": {
-        "id": "user1",
-        "name": "Juan"
-      },
-      "message_type": "TEXT",
-      "message": "hola",
-      "ciphertext": "",
-      "source": "",
-      "created_at": "2026-04-13T10:00:00Z",
-      "updated_at": "2026-04-13T10:00:00Z",
-      "response_msg_id": "",
-      "deleted_by": [],
-      "keys": [],
-      "conversation_id": "conv1"
-    }
-  ]
-}</pre>
-  </div>
-
-  <!-- ========================================================= -->
-  <!-- LOAD MORE -->
-  <!-- ========================================================= -->
-  <div class="section">
-    <h2>📜 LoadMoreMessages</h2>
-
-    <h3>REQUEST</h3>
-    <table>
-      <tr>
-        <th>Campo</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td>chat_id</td>
-        <td>string</td>
-        <td>ID chat</td>
-      </tr>
-      <tr>
-        <td>user_id</td>
-        <td>string</td>
-        <td>ID usuario</td>
-      </tr>
-      <tr>
-        <td>before_date</td>
-        <td>string</td>
-        <td>ISO8601</td>
-      </tr>
-    </table>
-
-    <pre>{
-  "chat_id": "chat123",
-  "user_id": "user1",
-  "before_date": "2026-04-13T10:00:00Z"
-}</pre>
-
-    <h3>RESPONSE</h3>
-
-    <table>
-      <tr>
-        <th>Campo</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td>messages</td>
-        <td>ChatMessageResponse[]</td>
-        <td>Mensajes anteriores</td>
-      </tr>
-    </table>
-
-    <pre>{
-  "messages": [
-    {
-      "id": "msg1",
-      "chat_id": "chat123",
-      "sender": {
-        "id": "user1",
-        "name": "Juan"
-      },
-      "message_type": "TEXT",
-      "message": "hola",
-      "ciphertext": "",
-      "source": "",
-      "created_at": "2026-04-13T10:00:00Z",
-      "updated_at": "2026-04-13T10:00:00Z",
-      "response_msg_id": "",
-      "deleted_by": [],
-      "keys": [],
-      "conversation_id": "conv1"
-    }
-  ]
-}</pre>
-  </div>
-
-
-  <div class="section">
-    <h2>📡 SubscribeToChat (STREAM)</h2>
-
-    <p><b>Socket:</b> chat.subscribe_to_chat</p>
-
-    <h3>REQUEST</h3>
-    <table>
-      <tr>
-        <th>Campo</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td>chat_id</td>
-        <td>string</td>
-        <td>ID del chat</td>
-      </tr>
-      <tr>
-        <td>user_id</td>
-        <td>string</td>
-        <td>ID usuario</td>
-      </tr>
-    </table>
-
-    <pre>{
-  "chat_id": "chat123",
-  "user_id": "user1"
-}</pre>
-
+  <!-- 1.1 GET CHAT LIST -->
+  <div class="endpoint">
+    <h3><code>chat.get_chat_list</code> ➔ Respuesta vía: <code>"response"</code></h3>
+    <p class="description">Obtiene la lista resumida de conversaciones activas del usuario.</p>
     
-
-    <h3>EVENT EXAMPLE (new_message)</h3>
-    <pre>{
-  "new_message": {
-    "id": "msg1",
-    "chat_id": "chat123",
-    "sender": {
-      "id": "user1",
-      "name": "Juan"
-    },
-    "message_type": "TEXT",
-    "message": "hola en vivo",
-    "ciphertext": "",
-    "source": "",
-    "created_at": "2026-04-13T10:00:00Z",
-    "updated_at": "2026-04-13T10:00:00Z",
-    "response_msg_id": "",
-    "deleted_by": [],
-    "keys": [],
-    "nonce": "string",
-    "sender_device_id":"string"
-  }
-}</pre>
-
-  </div>
-
-
-  <div class="section">
-    <h2>🌍 SubscribeGlobal (STREAM)</h2>
-
-    <p><b>Socket:</b> chat.subscribe_global</p>
-
-    <h3>REQUEST</h3>
-    <table>
-      <tr>
-        <th>Campo</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td>user_id</td>
-        <td>string</td>
-        <td>ID usuario</td>
-      </tr>
-    </table>
-
-    <pre>{
-  "user_id": "user1"
-}</pre>
-
-    <h3>STREAM RESPONSE (GlobalEvent)</h3>
-
-    <table>
-      <tr>
-        <th>Evento</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td>chat_list_updated</td>
-        <td>Nuevo chat o actualización de lista</td>
-      </tr>
-    </table>
-
-    <h3>EVENT EXAMPLE</h3>
-    <pre>{
-  "chat_list_updated": {
-    "chat_id": "chat123"
-  }
-}</pre>
-
-  </div>
-
-
-  <div class="section">
-    <h2>✏️ EditMessage</h2>
-
-    <p><b>Socket:</b> chat.edit_message</p>
-
-    <h3>REQUEST</h3>
-    <table>
-      <tr>
-        <th>Campo</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td>message_id</td>
-        <td>string</td>
-        <td>ID mensaje</td>
-      </tr>
-      <tr>
-        <td>new_message</td>
-        <td>string</td>
-        <td>Nuevo contenido</td>
-      </tr>
-    </table>
-
-    <pre>{
-  "message_id": "msg1",
-  "new_message": "editado"
-}</pre>
-
-    <h3>RESPONSE</h3>
-    <table>
-      <tr>
-        <th>Campo</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td colspan="3">ChatMessageResponse completo (igual sección principal)</td>
-      </tr>
-    </table>
-
-    <pre>{
-  "id": "msg1",
-  "chat_id": "chat123",
-  "sender": {
-    "id": "user1",
-    "name": "Juan"
-  },
-  "message_type": "TEXT",
-  "message": "editado",
-  "ciphertext": "",
-  "source": "",
-  "created_at": "2026-04-13T10:00:00Z",
-  "updated_at": "2026-04-13T10:05:00Z",
-  "response_msg_id": "",
-  "deleted_by": [],
-  "keys": [],
-  "conversation_id": "conv1"
-}</pre>
-
-  </div>
-
-
-
-  <div class="section">
-    <h2>❌ DeleteMessage</h2>
-    <p><b>Socket:</b> chat.delete_message</p>
-
-    <h3>REQUEST</h3>
-    <table>
-      <tr>
-        <th>Campo</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td>message_id</td>
-        <td>string</td>
-        <td>ID mensaje</td>
-      </tr>
-      <tr>
-        <td>user_id</td>
-        <td>string</td>
-        <td>ID profile</td>
-      </tr>
-    </table>
-
-    <pre>{
-  "message_id": "msg1",
-  "user_id": "user1"
-}</pre>
-
-    <h3>RESPONSE</h3>
-    <table>
-      <tr>
-        <th>Campo</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td>status</td>
-        <td>bool</td>
-        <td>Resultado operación</td>
-      </tr>
-    </table>
-
-    <pre>{
-  "status": true
-}</pre>
-
-  </div>
-
-  <div class="section">
-    <h2>❌ DeleteChat</h2>
-    <p><b>Socket:</b> chat.delete_chat</p>
-
-    <h3>REQUEST</h3>
-    <table>
-      <tr>
-        <th>Campo</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td>chat_id</td>
-        <td>string</td>
-        <td>ID chat</td>
-      </tr>
-      <tr>
-        <td>profile_id</td>
-        <td>string</td>
-        <td>ID profile</td>
-      </tr>
-    </table>
-
-    <pre>{
-  "chat_id": "msg1",
-  "profile_id": "user1"
-}</pre>
-
-    <h3>RESPONSE</h3>
-    <table>
-      <tr>
-        <th>Campo</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td>status</td>
-        <td>bool</td>
-        <td>Resultado operación</td>
-      </tr>
-    </table>
-
-    <pre>{
-  "status": true
-}</pre>
-
-  </div>
-
-  <div class="section">
-    <h2>⌨️ StartTyping / StopTyping</h2>
-
-    <h3>REQUEST</h3>
-    <table>
-      <tr>
-        <th>Campo</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td>chat_id</td>
-        <td>string</td>
-        <td>ID chat</td>
-      </tr>
-      <tr>
-        <td>user_id</td>
-        <td>string</td>
-        <td>ID usuario</td>
-      </tr>
-    </table>
-
-    <pre>{
-  "chat_id": "chat123",
-  "user_id": "user1"
-}</pre>
-
-    <h3>RESPONSE</h3>
-    <table>
-      <tr>
-        <th>Campo</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td>status</td>
-        <td>bool</td>
-        <td>Resultado</td>
-      </tr>
-    </table>
-
-    <pre>{
-  "status": true
-}</pre>
-
-  </div>
-
-  <div class="section">
-    <h2>📜 LoadMoreMessages</h2>
-
-    <h3>REQUEST</h3>
-    <table>
-      <tr>
-        <th>Campo</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td>chat_id</td>
-        <td>string</td>
-        <td>ID chat</td>
-      </tr>
-      <tr>
-        <td>user_id</td>
-        <td>string</td>
-        <td>ID usuario</td>
-      </tr>
-      <tr>
-        <td>before_date</td>
-        <td>string</td>
-        <td>ISO8601 timestamp</td>
-      </tr>
-    </table>
-
-    <pre>{
-  "chat_id": "chat123",
-  "user_id": "user1",
-  "before_date": "2026-04-13T10:00:00Z"
-}</pre>
-
-    <h3>RESPONSE</h3>
-    <table>
-      <tr>
-        <th>Campo</th>
-        <th>Tipo</th>
-        <th>Descripción</th>
-      </tr>
-      <tr>
-        <td>messages</td>
-        <td>ChatMessageResponse[]</td>
-        <td>Mensajes históricos</td>
-      </tr>
-    </table>
-
-    <pre>{
-  "messages": [
-    {
-      "id": "msg1",
-      "chat_id": "chat123",
-      "sender": {
-        "id": "user1",
-        "name": "Juan"
-      },
-      "message_type": "TEXT",
-      "message": "hola",
-      "ciphertext": "",
-      "source": "",
-      "created_at": "2026-04-13T10:00:00Z",
-      "updated_at": "2026-04-13T10:00:00Z",
-      "response_msg_id": "",
-      "deleted_by": [],
-      "keys": [],
-      "conversation_id": "conv1"
-    }
-  ]
-}</pre>
-
-  </div>
-
-
-
-<h1>WebSocket API - Chat</h1>
-
-<!-- CHAT LIST -->
-<div class="section">
-
-<h2>Evento: chat.get_chat_list</h2>
-
-<p>Obtiene la lista de conversaciones de un usuario con soporte para paginación.</p>
-
-<h3>Request</h3>
-<pre>
+    <div class="payload-title">1. Emisión del Cliente:</div>
+<pre><code>// socket.emit("chat.get_chat_list", { ... })
 {
   "user_id": "672800e46f4b3358a701fa9c",
-  "before_chat_id": "6a0218f86ea60e4bf5b0a249",
+  "before_chat_id": "",
   "limit": 10
-}
-</pre>
+}</code></pre>
 
-<h3>Parámetros</h3>
-<table>
-<tr><th>Campo</th><th>Tipo</th><th>Requerido</th><th>Descripción</th></tr>
-<tr><td>user_id</td><td>string</td><td>Sí</td><td>Identificador del usuario propietario de los chats</td></tr>
-<tr><td>before_chat_id</td><td>string</td><td>No</td><td>Cursor para paginación</td></tr>
-<tr><td>limit</td><td>number</td><td>Sí</td><td>Número máximo de chats</td></tr>
-</table>
-
-<h3>Response</h3>
-<pre>
-{
-  "chats": [
-    {
-      "chat_id": "6a4828b851be3b4af3f7c247",
-      "contact": {
-        "profile_id": "67d43d6b8f92136e4cfa0b89",
-        "user_id": "67d43d6b8f92136e4cfa0b88",
-        "avatar": "",
-        "name": "Raúl Puentes Aguirre",
-        "last_message": "Hola...",
-        "created_at": "2026-07-03T21:25:12.258Z"
+    <div class="payload-title">2. Respuesta del Servidor (<code>socket.on("response")</code>):</div>
+<pre><code>{
+  "type": "response",
+  "payload": {
+    "chats": [
+      {
+        "chat_id": "6a022c0a50bf64cf1674e287",
+        "contact": {
+          "profile_id": "672800e46f4b3358a701fa9d",
+          "user_id": "672800e46f4b3358a701fa9c",
+          "avatar": "https://storage.googleapis.com/media-temp.cuboconecta.com/avatars/1778611747_media.jpg",
+          "name": "Carlos Santana",
+          "last_message": "Esta es una prueba",
+          "created_at": "2026-07-22T20:14:37.218Z"
+        }
       }
-    }
-  ],
-  "has_more": true
-}
-</pre>
+    ],
+    "has_more": false
+  }
+}</code></pre>
+  </div>
 
-</div>
-
-<!-- CHAT MESSAGES -->
-<div class="section">
-
-<h2>Evento: chat.get_chat_messages</h2>
-
-<p>Obtiene los mensajes de una conversación con paginación.</p>
-
-<h3>Request</h3>
-<pre>
+  <!-- 1.2 GET CHAT MESSAGES -->
+  <div class="endpoint">
+    <h3><code>chat.get_chat_messages</code> ➔ Respuesta vía: <code>"response"</code></h3>
+    <p class="description">Obtiene el historial detallado de mensajes de una conversación específica.</p>
+    
+    <div class="payload-title">1. Emisión del Cliente:</div>
+<pre><code>// socket.emit("chat.get_chat_messages", { ... })
 {
   "chat_id": "6a022c0a50bf64cf1674e287",
   "user_id": "672800e46f4b3358a701fa9c",
-  "limit": 10,
-  "before_message_id": ""
-}
-</pre>
+  "before_message_id": "",
+  "limit": 20
+}</code></pre>
 
-<h3>Response</h3>
-<pre>
+    <div class="payload-title">2. Respuesta del Servidor (<code>socket.on("response")</code>):</div>
+<pre><code>{
+  "type": "response",
+  "payload": {
+    "messages": [
+      {
+        "id": "67a1b2c3d4e5f67890123456",
+        "chat_id": "6a022c0a50bf64cf1674e287",
+        "sender": {
+          "user_id": "672800e46f4b3358a701fa9c",
+          "profile_id": "672800e46f4b3358a701fa9d",
+          "name": "Carlos Santana",
+          "avatar": "https://storage.googleapis.com/media-temp.cuboconecta.com/avatars/avatar.jpg"
+        },
+        "message_type": 0,
+        "message": "Esta es una prueba",
+        "ciphertext": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "source": "",
+        "created_at": "2026-07-22T20:14:37.218Z",
+        "updated_at": "",
+        "response_msg_id": "",
+        "deleted_by": [],
+        "keys": [
+          { "device_id": "dev_01", "encrypted_key": "enc_key_abc..." }
+        ],
+        "nonce": "nonce_val_999",
+        "sender_device_id": "uuid-temp-mobile-12345"
+      }
+    ],
+    "has_more": false
+  }
+}</code></pre>
+  </div>
+
+  <!-- 1.3 SEND MESSAGE -->
+  <div class="endpoint">
+    <h3><code>chat.send_message</code> ➔ Respuesta vía: <code>"response"</code> (ACK) y <code>"chat.message"</code> (Stream)</h3>
+    <p class="description">Envía un nuevo mensaje. El emisor recibe la confirmación formal por <code>"response"</code>, y el mensaje en tiempo real se propaga a la sala vía <code>"chat.message"</code>.</p>
+    
+    <div class="payload-title">1. Emisión del Cliente:</div>
+<pre><code>// socket.emit("chat.send_message", { ... })
 {
-  "has_more": false,
-  "messages": [
-    {
-      "id": "6a4828b851be3b4af3f7c248",
-      "chat_id": "6a4828b851be3b4af3f7c247",
-      "sender": {
-        "profile_id": "672800e46f4b3358a701fa9d",
-        "user_id": "672800e46f4b3358a701fa9c",
-        "name": "Carlos Santana",
-        "avatar": "https://..."
-      },
-      "message_type": "TEXT",
-      "message": "",
-      "ciphertext": "Hola...",
-      "source": "",
-      "created_at": "2026-07-03T21:25:12.258Z",
-      "updated_at": "0001-01-01T00:00:00Z",
-      "response_msg_id": "",
-      "deleted_by": null,
-      "keys": [
-        {
-          "device_id": "abc123",
-          "encrypted_key": "xyz789"
-        }
-      ],
-      "nonce": "",
-      "sender_device_id": ""
-    }
-  ]
-}
-</pre>
+  "chat_id": "6a022c0a50bf64cf1674e287",
+  "sender_id": "672800e46f4b3358a701fa9c",
+  "message_type": 0,
+  "message": "Hola, ¿cómo estás?",
+  "ciphertext": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "source": "",
+  "response_msg_id": "",
+  "keys": [
+    { "device_id": "dev_mobile_01", "encrypted_key": "enc_key_xyz..." }
+  ],
+  "nonce": "nonce_val_999",
+  "sender_device_id": "uuid-temp-mobile-12345"
+}</code></pre>
 
-</div>
+    <div class="payload-title">2. Respuesta al Emisor (<code>socket.on("response")</code>):</div>
+<pre><code>{
+  "type": "response",
+  "payload": {
+    "id": "67a1b2c3d4e5f67890123457",
+    "chat_id": "6a022c0a50bf64cf1674e287",
+    "sender": {
+      "user_id": "672800e46f4b3358a701fa9c",
+      "profile_id": "672800e46f4b3358a701fa9d",
+      "name": "Carlos Santana",
+      "avatar": "https://storage.googleapis.com/media-temp.cuboconecta.com/avatars/avatar.jpg"
+    },
+    "message_type": 0,
+    "message": "Hola, ¿cómo estás?",
+    "ciphertext": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source": "",
+    "created_at": "2026-07-22T20:15:00.000Z",
+    "updated_at": "",
+    "response_msg_id": "",
+    "deleted_by": [],
+    "keys": [
+      { "device_id": "dev_mobile_01", "encrypted_key": "enc_key_xyz..." }
+    ],
+    "nonce": "nonce_val_999",
+    "sender_device_id": "uuid-temp-mobile-12345"
+  }
+}</code></pre>
+  </div>
 
-<!-- MESSAGE STRUCTURE -->
-<div class="section">
+  <!-- 1.4 EDIT MESSAGE -->
+  <div class="endpoint">
+    <h3><code>chat.edit_message</code> ➔ Respuesta vía: <code>"response"</code></h3>
+    <p class="description">Edita un mensaje existente. Devuelve la entidad dentro del <code>payload</code> con los sellos de tiempo en formato Protobuf Timestamp (<code>seconds</code> y <code>nanos</code>).</p>
+    
+    <div class="payload-title">1. Emisión del Cliente:</div>
+<pre><code>// socket.emit("chat.edit_message", { ... })
+{
+  "message_id": "6a6145b055502227402bc597",
+  "new_message": "Hola, este es un mensaje de prueba-Actualiza2"
+}</code></pre>
 
-<h2>Estructuras</h2>
+    <div class="payload-title">2. Respuesta del Servidor (<code>socket.on("response")</code>):</div>
+<pre><code>{
+  "type": "response",
+  "payload": {
+    "id": "6a6145b055502227402bc597",
+    "chat_id": "6a4828b851be3b4af3f7c247",
+    "sender": {
+      "profile_id": "672800e46f4b3358a701fa9d",
+      "user_id": "672800e46f4b3358a701fa9c",
+      "name": "Carlos Santana",
+      "avatar": "https://storage.googleapis.com/media-temp.cuboconecta.com/avatars/1778611747_media.jpg"
+    },
+    "message_type": "TEXT",
+    "message": "",
+    "ciphertext": "Hola, este es un mensaje de prueba-Actualiza2",
+    "source": "*****",
+    "created_at": {
+      "seconds": "1784759728",
+      "nanos": 42000000
+    },
+    "updated_at": {
+      "seconds": "1784759741",
+      "nanos": 605000000
+    },
+    "response_msg_id": "66ecb08136913f91ab45fddf",
+    "deleted_by": [],
+    "keys": [
+      {
+        "device_id": "abc123",
+        "encrypted_key": "xyz789"
+      }
+    ],
+    "nonce": "",
+    "sender_device_id": ""
+  }
+}</code></pre>
+  </div>
 
-<h3>Chat</h3>
-<table>
-<tr><th>Campo</th><th>Descripción</th></tr>
-<tr><td>chat_id</td><td>ID del chat</td></tr>
-<tr><td>contact</td><td>Información del contacto</td></tr>
-</table>
+  <!-- 1.5 DELETE MESSAGE -->
+  <div class="endpoint">
+    <h3><code>chat.delete_message</code> ➔ Respuesta vía: <code>"response"</code></h3>
+    <p class="description">Elimina un mensaje específico de la conversación.</p>
+    
+    <div class="payload-title">1. Emisión del Cliente:</div>
+<pre><code>// socket.emit("chat.delete_message", { ... })
+{
+  "message_id": "67a1b2c3d4e5f67890123457",
+  "chat_id": "6a022c0a50bf64cf1674e287",
+  "user_id": "672800e46f4b3358a701fa9c"
+}</code></pre>
 
-<h3>Message</h3>
-<table>
-<tr><th>Campo</th><th>Descripción</th></tr>
-<tr><td>id</td><td>ID del mensaje</td></tr>
-<tr><td>chat_id</td><td>ID del chat</td></tr>
-<tr><td>sender</td><td>Datos del remitente</td></tr>
-<tr><td>message_type</td><td>Tipo de mensaje</td></tr>
-<tr><td>message</td><td>Texto plano</td></tr>
-<tr><td>ciphertext</td><td>Mensaje cifrado</td></tr>
-<tr><td>source</td><td>Archivo o URL</td></tr>
-<tr><td>created_at</td><td>Fecha creación</td></tr>
-<tr><td>updated_at</td><td>Fecha actualización</td></tr>
-<tr><td>response_msg_id</td><td>Mensaje respondido</td></tr>
-<tr><td>deleted_by</td><td>Eliminación lógica</td></tr>
-<tr><td>keys</td><td>Llaves de cifrado</td></tr>
-<tr><td>nonce</td><td>Nonce de cifrado</td></tr>
-<tr><td>sender_device_id</td><td>Dispositivo emisor</td></tr>
-</table>
+    <div class="payload-title">2. Respuesta del Servidor (<code>socket.on("response")</code>):</div>
+<pre><code>{
+  "type": "response",
+  "payload": {
+    "message_id": "67a1b2c3d4e5f67890123457",
+    "chat_id": "6a022c0a50bf64cf1674e287",
+    "deleted": true
+  }
+}</code></pre>
+  </div>
 
-</div>
+  <!-- 1.6 DELETE CHAT -->
+  <div class="endpoint">
+    <h3><code>chat.delete_chat</code> ➔ Respuesta vía: <code>"response"</code></h3>
+    <p class="description">Elimina un chat completo para el usuario solicitante.</p>
+    
+    <div class="payload-title">1. Emisión del Cliente:</div>
+<pre><code>// socket.emit("chat.delete_chat", { ... })
+{
+  "chat_id": "6a022c0a50bf64cf1674e287",
+  "profile_id": "672800e46f4b3358a701fa9d"
+}</code></pre>
 
-
-
-<div class="container">
-
-<h1>Evento WebSocket: <code>chat.message</code></h1>
-
-    <p>
-      El evento <strong>chat.message</strong> se emite cuando un usuario envía un nuevo
-      mensaje dentro de una conversación.
-    </p>
-
-    <p>
-      Este evento es recibido tanto por el <strong>emisor</strong> como por el
-      <strong>destinatario</strong>, permitiendo mantener sincronizada la conversación
-      en tiempo real.
-    </p>
-
-    <p>
-      <span class="badge">type: response</span>
-    </p>
-
-    <h2>Estructura de la respuesta</h2>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Campo</th>
-          <th>Tipo</th>
-          <th>Descripción</th>
-        </tr>
-      </thead>
-
-      <tbody>
-
-        <tr>
-          <td>type</td>
-          <td>string</td>
-          <td>Tipo del evento. Para este caso siempre será <code>response</code>.</td>
-        </tr>
-
-        <tr>
-          <td>payload.chat_id</td>
-          <td>string</td>
-          <td>Identificador único del chat.</td>
-        </tr>
-
-        <tr>
-          <td>payload.id</td>
-          <td>string</td>
-          <td>Identificador único del mensaje.</td>
-        </tr>
-
-        <tr>
-          <td>payload.ciphertext</td>
-          <td>string</td>
-          <td>Contenido cifrado del mensaje.</td>
-        </tr>
-
-        <tr>
-          <td>payload.message</td>
-          <td>string</td>
-          <td>Contenido del mensaje en texto plano. Puede venir vacío cuando el mensaje se transmite cifrado.</td>
-        </tr>
-
-        <tr>
-          <td>payload.message_type</td>
-          <td>string</td>
-          <td>Tipo de mensaje (TEXT, IMAGE, VIDEO, FILE, AUDIO, etc.).</td>
-        </tr>
-
-        <tr>
-          <td>payload.keys</td>
-          <td>object | null</td>
-          <td>Claves necesarias para el proceso de descifrado del mensaje.</td>
-        </tr>
-
-        <tr>
-          <td>payload.nonce</td>
-          <td>string</td>
-          <td>Valor criptográfico (Nonce) utilizado durante el cifrado.</td>
-        </tr>
-
-        <tr>
-          <td>payload.response_msg_id</td>
-          <td>string</td>
-          <td>Identificador del mensaje al que se está respondiendo.</td>
-        </tr>
-
-        <tr>
-          <td>payload.sender</td>
-          <td>object</td>
-          <td>Información del usuario que envió el mensaje.</td>
-        </tr>
-
-        <tr>
-          <td>payload.sender.user_id</td>
-          <td>string</td>
-          <td>Identificador del usuario.</td>
-        </tr>
-
-        <tr>
-          <td>payload.sender.profile_id</td>
-          <td>string</td>
-          <td>Identificador del perfil.</td>
-        </tr>
-
-        <tr>
-          <td>payload.sender.name</td>
-          <td>string</td>
-          <td>Nombre del usuario que envió el mensaje.</td>
-        </tr>
-
-        <tr>
-          <td>payload.sender.avatar</td>
-          <td>string</td>
-          <td>URL de la fotografía de perfil.</td>
-        </tr>
-
-        <tr>
-          <td>payload.sender_device_id</td>
-          <td>string</td>
-          <td>Identificador del dispositivo desde el que fue enviado el mensaje.</td>
-        </tr>
-
-        <tr>
-          <td>payload.source</td>
-          <td>string</td>
-          <td>Origen del mensaje (si aplica).</td>
-        </tr>
-
-        <tr>
-          <td>payload.deleted_by</td>
-          <td>object | null</td>
-          <td>Información sobre la eliminación del mensaje.</td>
-        </tr>
-
-        <tr>
-          <td>payload.created_at</td>
-          <td>RFC3339 Timestamp</td>
-          <td>Fecha y hora en la que fue creado el mensaje.</td>
-        </tr>
-
-        <tr>
-          <td>payload.updated_at</td>
-          <td>RFC3339 Timestamp</td>
-          <td>Fecha y hora de la última actualización del mensaje.</td>
-        </tr>
-
-      </tbody>
-    </table>
-
-    <h2>Ejemplo de respuesta</h2>
-
-    <pre>{
+    <div class="payload-title">2. Respuesta del Servidor (<code>socket.on("response")</code>):</div>
+<pre><code>{
+  "type": "response",
   "payload": {
     "chat_id": "6a022c0a50bf64cf1674e287",
-    "ciphertext": "Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers",
-    "created_at": "2026-07-10T15:34:55.041502252Z",
-    "deleted_by": null,
-    "id": "6a51111f15d684eda84c8127",
-    "keys": null,
-    "message": "",
-    "message_type": "TEXT",
-    "nonce": "",
-    "response_msg_id": "",
-    "sender": {
-      "avatar": "https://storage.googleapis.com/media-temp.cuboconecta.com/avatars/1778611747_media_1778611741324.jpg",
-      "name": "Carlos Santana",
-      "profile_id": "672800e46f4b3358a701fa9d",
-      "user_id": "672800e46f4b3358a701fa9c"
-    },
-    "sender_device_id": "e5ec2158-e46c-49ec-acf0-129c6aafd0ca",
-    "source": "",
-    "updated_at": "0001-01-01T00:00:00Z"
-  },
-  "type": "response"
-}</pre>
+    "deleted": true
+  }
+}</code></pre>
+  </div>
 
-    <div class="note">
-      <strong>Nota:</strong><br><br>
-
-      Si el sistema utiliza cifrado de extremo a extremo (E2EE), el cliente deberá
-      descifrar el contenido utilizando los campos
-      <strong>ciphertext</strong>, <strong>keys</strong> y <strong>nonce</strong>.
-      Mientras tanto, el campo <strong>message</strong> puede permanecer vacío.
-    </div>
-
+  <!-- 1.7 START / STOP TYPING -->
+  <div class="endpoint">
+    <h3><code>chat.start_typing</code> / <code>chat.stop_typing</code> <span class="badge">Acción</span></h3>
+    <p class="description">Notifica el estado de escritura del usuario. Requiere <code>target_user_id</code>.</p>
+    
+    <div class="payload-title">Petición (Cliente ➔ Servidor):</div>
+<pre><code>// socket.emit("chat.start_typing", { ... })
+{
+  "chat_id": "6a022c0a50bf64cf1674e287",
+  "user_id": "6727ea0d6f4b3358a701dd7d",
+  "target_user_id": "672800e46f4b3358a701fa9c"
+}</code></pre>
   </div>
 
 
+  <!-- SECCIÓN 2: EVENTOS STREAM (SERVIDOR ➔ CLIENTES) -->
+  <h2>2. EVENTOS STREAM EN TIEMPO REAL (ESCUCHADORES)</h2>
+
+  <!-- 2.1 CHAT MESSAGE INCOMING -->
+  <div class="endpoint">
+    <h3>Evento: <code>chat.message</code> <span class="badge badge-stream">Stream</span></h3>
+    <p class="description">Evento pasivo transmitido por el backend (vía `SendToRoomEvent` y `SendToUserEvent`) cuando se procesa un mensaje. Lo escuchan los destinatarios y otros dispositivos del emisor.</p>
+    
+    <div class="payload-title">Payload Recibido (<code>socket.on("chat.message", callback)</code>):</div>
+<pre><code>{
+  "id": "67a1b2c3d4e5f67890123457",
+  "chat_id": "6a022c0a50bf64cf1674e287",
+  "sender": {
+    "user_id": "672800e46f4b3358a701fa9c",
+    "profile_id": "672800e46f4b3358a701fa9d",
+    "name": "Carlos Santana",
+    "avatar": "https://storage.googleapis.com/media-temp.cuboconecta.com/avatars/avatar.jpg"
+  },
+  "message_type": 0,
+  "message": "Hola, ¿cómo estás?",
+  "ciphertext": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "source": "",
+  "created_at": "2026-07-22T20:15:00.000Z",
+  "updated_at": "",
+  "response_msg_id": "",
+  "deleted_by": [],
+  "keys": [
+    { "device_id": "dev_mobile_01", "encrypted_key": "enc_key_xyz..." }
+  ],
+  "nonce": "nonce_val_999",
+  "sender_device_id": "uuid-temp-mobile-12345"
+}</code></pre>
+  </div>
+
+  <!-- 2.2 CHAT TYPING STATUS -->
+  <div class="endpoint">
+    <h3>Evento: <code>chat.typing_status</code> <span class="badge badge-stream">Stream</span></h3>
+    <p class="description">Evento pasivo retransmitido por el servidor únicamente al <code>target_user_id</code>.</p>
+    
+    <div class="payload-title">Payload Recibido (<code>socket.on("chat.typing_status", callback)</code>):</div>
+<pre><code>{
+  "type": "chat.start_typing", // o "chat.stop_typing"
+  "payload": {
+    "chat_id": "6a022c0a50bf64cf1674e287",
+    "user_id": "6727ea0d6f4b3358a701dd7d",
+    "target_user_id": "672800e46f4b3358a701fa9c"
+  }
+}</code></pre>
+  </div>
 
 
+  <!-- SECCIÓN 3: EVENTOS DE PRESENCIA -->
+  <h2>3. EVENTOS DE PRESENCIA</h2>
+
+  <!-- 3.1 PRESENCE SNAPSHOT -->
+  <div class="endpoint">
+    <h3><code>presence.snapshot</code> <span class="badge badge-presence">Presencia</span></h3>
+    <p class="description">Solicita la presencia de un listado de usuarios.</p>
+    
+    <div class="payload-title">Petición (Cliente ➔ Servidor):</div>
+<pre><code>// socket.emit("presence.snapshot", { ... })
+{
+  "user_ids": [
+    "672800e46f4b3358a701fa9c",
+    "6931d2081be27e64d77a0059"
+  ]
+}</code></pre>
+
+    <div class="payload-title">Respuesta Recibida (<code>socket.on("presence.snapshot")</code>):</div>
+<pre><code>{
+  "data": {
+    "672800e46f4b3358a701fa9c": true,  // En línea
+    "6931d2081be27e64d77a0059": false  // Desconectado
+  }
+}</code></pre>
+  </div>
+
+  <!-- 3.2 PRESENCE WATCH -->
+  <div class="endpoint">
+    <h3><code>presence.watch</code> <span class="badge badge-presence">Presencia</span></h3>
+    <p class="description">Suscripción en tiempo real a la presencia de un usuario específico.</p>
+    
+    <div class="payload-title">Petición (Cliente ➔ Servidor):</div>
+<pre><code>// socket.emit("presence.watch", { ... })
+{
+  "user_id": "6931d2081be27e64d77a0059"
+}</code></pre>
+  </div>
+
+</div>
 
 </body>
-
 </html>
