@@ -268,13 +268,13 @@
         ],
         "nonce": "nonce_val_999",
         "sender_device_id": "uuid-temp-mobile-12345",
-         "reply_to": {
+        "reply_to": {
           id: '6a74cc9eb4d074f7ceb342c4',
           sender_profile_id: '672800e46f4b3358a701fa9d',
           sender_name: 'Tú',
           text: 'Hola buen dia'
         },
-        "temp_id": 'aTHiJM93SriZUjZ0EOzx9',
+        "temp_id": 'aTHiJM93SriZUjZ0EOzx9<----id temporal',
       }
     ],
     "has_more": false
@@ -305,7 +305,7 @@
   ],
   "nonce": "nonce_val_999",
   "sender_device_id": "uuid-temp-mobile-12345",
-  "temp_id": 'aTHiJM93SriZUjZ0EOzx9',
+  "temp_id": 'aTHiJM93SriZUjZ0EOzx9<----id temporal',
 }</code></pre>
 
       <div class="payload-title">2. Respuesta al Emisor (<code>socket.on("response")</code>):</div>
@@ -339,8 +339,7 @@
       sender_name: 'Tú',
       text: 'Hola buen dia'
     },
-    "temp_id": 'aTHiJM93SriZUjZ0EOzx9',
-
+    "temp_id": 'aTHiJM93SriZUjZ0EOzx9<----id temporal',
   }
 }</code></pre>
     </div>
@@ -398,7 +397,7 @@
       sender_name: 'Tú',
       text: 'Hola buen dia'
     },
-    "temp_id": 'aTHiJM93SriZUjZ0EOzx9',
+    "temp_id": 'aTHiJM93SriZUjZ0EOzx9<----id temporal',
   }
 }</code></pre>
     </div>
@@ -529,7 +528,14 @@
     { "device_id": "dev_mobile_01", "encrypted_key": "enc_key_xyz..." }
   ],
   "nonce": "nonce_val_999",
-  "sender_device_id": "uuid-temp-mobile-12345"
+  "sender_device_id": "uuid-temp-mobile-12345",
+  "reply_to": {
+    id: '6a74cc9eb4d074f7ceb342c4',
+    sender_profile_id: '672800e46f4b3358a701fa9d',
+    sender_name: 'Tú',
+    text: 'Hola buen dia'
+  },
+  "temp_id": 'aTHiJM93SriZUjZ0EOzx9<----id temporal',
 }</code></pre>
     </div>
 
