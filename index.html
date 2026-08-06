@@ -170,7 +170,7 @@
           <td>Cliente Emisor (Solicitante).</td>
         </tr>
         <tr>
-          <td><code>chat.delete_messages</code>
+          <td><code>chat.delete_messages</code></td>
           <td>Evento <code>"response"</code></td>
           <td>Cliente Emisor (Solicitante).</td>
         </tr>
@@ -249,32 +249,35 @@
       {
         "id": "67a1b2c3d4e5f67890123456",
         "chat_id": "6a022c0a50bf64cf1674e287",
+        "temp_id": "aTHiJM93SriZUjZ0EOzx9",
         "sender": {
           "user_id": "672800e46f4b3358a701fa9c",
           "profile_id": "672800e46f4b3358a701fa9d",
           "name": "Carlos Santana",
           "avatar": "https://storage.googleapis.com/media-temp.cuboconecta.com/avatars/avatar.jpg"
         },
-        "message_type": 0,
+        "message_type": "TEXT",
         "message": "Esta es una prueba",
         "ciphertext": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "source": "",
         "created_at": "2026-07-22T20:14:37.218Z",
         "updated_at": "",
-        "response_msg_id": "",
-        "deleted_by": [],
+        "response_msg_id": "6a74cc9eb4d074f7ceb342c4",
+        "deleted_by": null,
         "keys": [
-          { "device_id": "dev_01", "encrypted_key": "enc_key_abc..." }
+          {
+            "device_id": "dev_01",
+            "encrypted_key": "enc_key_abc..."
+          }
         ],
         "nonce": "nonce_val_999",
         "sender_device_id": "uuid-temp-mobile-12345",
         "reply_to": {
-          id: '6a74cc9eb4d074f7ceb342c4',
-          sender_profile_id: '672800e46f4b3358a701fa9d',
-          sender_name: 'Tú',
-          text: 'Hola buen dia'
-        },
-        "temp_id": 'aTHiJM93SriZUjZ0EOzx9<----id temporal',
+          "id": "6a74cc9eb4d074f7ceb342c4",
+          "sender_profile_id": "672800e46f4b3358a701fa9d",
+          "sender_name": "Tú",
+          "text": "Hola buen dia"
+        }
       }
     ],
     "has_more": false
@@ -301,11 +304,14 @@
   "source": "",
   "response_msg_id": "",
   "keys": [
-    { "device_id": "dev_mobile_01", "encrypted_key": "enc_key_xyz..." }
+    {
+      "device_id": "dev_mobile_01",
+      "encrypted_key": "enc_key_xyz..."
+    }
   ],
   "nonce": "nonce_val_999",
   "sender_device_id": "uuid-temp-mobile-12345",
-  "temp_id": 'aTHiJM93SriZUjZ0EOzx9<----id temporal',
+  "temp_id": "aTHiJM93SriZUjZ0EOzx9"
 }</code></pre>
 
       <div class="payload-title">2. Respuesta al Emisor (<code>socket.on("response")</code>):</div>
@@ -314,32 +320,35 @@
   "payload": {
     "id": "67a1b2c3d4e5f67890123457",
     "chat_id": "6a022c0a50bf64cf1674e287",
+    "temp_id": "aTHiJM93SriZUjZ0EOzx9",
     "sender": {
       "user_id": "672800e46f4b3358a701fa9c",
       "profile_id": "672800e46f4b3358a701fa9d",
       "name": "Carlos Santana",
       "avatar": "https://storage.googleapis.com/media-temp.cuboconecta.com/avatars/avatar.jpg"
     },
-    "message_type": 0,
+    "message_type": "TEXT",
     "message": "Hola, ¿cómo estás?",
     "ciphertext": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "source": "",
     "created_at": "2026-07-22T20:15:00.000Z",
     "updated_at": "",
-    "response_msg_id": "",
-    "deleted_by": [],
+    "response_msg_id": "6a74cc9eb4d074f7ceb342c4",
+    "deleted_by": null,
     "keys": [
-      { "device_id": "dev_mobile_01", "encrypted_key": "enc_key_xyz..." }
+      {
+        "device_id": "dev_mobile_01",
+        "encrypted_key": "enc_key_xyz..."
+      }
     ],
     "nonce": "nonce_val_999",
     "sender_device_id": "uuid-temp-mobile-12345",
-    reply_to: {
-      id: '6a74cc9eb4d074f7ceb342c4',
-      sender_profile_id: '672800e46f4b3358a701fa9d',
-      sender_name: 'Tú',
-      text: 'Hola buen dia'
-    },
-    "temp_id": 'aTHiJM93SriZUjZ0EOzx9<----id temporal',
+    "reply_to": {
+      "id": "6a74cc9eb4d074f7ceb342c4",
+      "sender_profile_id": "672800e46f4b3358a701fa9d",
+      "sender_name": "Tú",
+      "text": "Hola buen dia"
+    }
   }
 }</code></pre>
     </div>
@@ -363,6 +372,7 @@
   "payload": {
     "id": "6a6145b055502227402bc597",
     "chat_id": "6a4828b851be3b4af3f7c247",
+    "temp_id": "aTHiJM93SriZUjZ0EOzx9",
     "sender": {
       "profile_id": "672800e46f4b3358a701fa9d",
       "user_id": "672800e46f4b3358a701fa9c",
@@ -382,7 +392,7 @@
       "nanos": 605000000
     },
     "response_msg_id": "66ecb08136913f91ab45fddf",
-    "deleted_by": [],
+    "deleted_by": null,
     "keys": [
       {
         "device_id": "abc123",
@@ -391,13 +401,12 @@
     ],
     "nonce": "",
     "sender_device_id": "",
-    reply_to: {
-      id: '6a74cc9eb4d074f7ceb342c4',
-      sender_profile_id: '672800e46f4b3358a701fa9d',
-      sender_name: 'Tú',
-      text: 'Hola buen dia'
-    },
-    "temp_id": 'aTHiJM93SriZUjZ0EOzx9<----id temporal',
+    "reply_to": {
+      "id": "6a74cc9eb4d074f7ceb342c4",
+      "sender_profile_id": "672800e46f4b3358a701fa9d",
+      "sender_name": "Tú",
+      "text": "Hola buen dia"
+    }
   }
 }</code></pre>
     </div>
@@ -448,7 +457,7 @@
 }</code></pre>
     </div>
 
-    <!-- 1.7 DELETE CHAT -->
+    <!-- 1.7 DELETE MESSAGES -->
     <div class="endpoint">
       <h3><code>chat.delete_messages</code> ➔ Respuesta vía: <code>"response"</code></h3>
       <p class="description">
@@ -510,43 +519,46 @@
       <pre><code>{
   "id": "67a1b2c3d4e5f67890123457",
   "chat_id": "6a022c0a50bf64cf1674e287",
+  "temp_id": "aTHiJM93SriZUjZ0EOzx9",
   "sender": {
     "user_id": "672800e46f4b3358a701fa9c",
     "profile_id": "672800e46f4b3358a701fa9d",
     "name": "Carlos Santana",
     "avatar": "https://storage.googleapis.com/media-temp.cuboconecta.com/avatars/avatar.jpg"
   },
-  "message_type": 0,
+  "message_type": "TEXT",
   "message": "Hola, ¿cómo estás?",
   "ciphertext": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "source": "",
   "created_at": "2026-07-22T20:15:00.000Z",
   "updated_at": "",
-  "response_msg_id": "",
-  "deleted_by": [],
+  "response_msg_id": "6a74cc9eb4d074f7ceb342c4",
+  "deleted_by": null,
   "keys": [
-    { "device_id": "dev_mobile_01", "encrypted_key": "enc_key_xyz..." }
+    {
+      "device_id": "dev_mobile_01",
+      "encrypted_key": "enc_key_xyz..."
+    }
   ],
   "nonce": "nonce_val_999",
   "sender_device_id": "uuid-temp-mobile-12345",
   "reply_to": {
-    id: '6a74cc9eb4d074f7ceb342c4',
-    sender_profile_id: '672800e46f4b3358a701fa9d',
-    sender_name: 'Tú',
-    text: 'Hola buen dia'
-  },
-  "temp_id": 'aTHiJM93SriZUjZ0EOzx9<----id temporal',
+    "id": "6a74cc9eb4d074f7ceb342c4",
+    "sender_profile_id": "672800e46f4b3358a701fa9d",
+    "sender_name": "Tú",
+    "text": "Hola buen dia"
+  }
 }</code></pre>
     </div>
 
     <!-- 2.2 CHAT TYPING STATUS -->
     <div class="endpoint">
       <h3>Evento: <code>chat.typing_status</code> <span class="badge badge-stream">Stream</span></h3>
-      <p class="description">Evento pasivo retransmitido por el servidor únicamente al <code>target_user_id</code>.</p>
+      <p class="description">Evento pasivo retransmitted por el servidor únicamente al <code>target_user_id</code>.</p>
 
       <div class="payload-title">Payload Recibido (<code>socket.on("chat.typing_status", callback)</code>):</div>
       <pre><code>{
-  "type": "chat.start_typing", // o "chat.stop_typing"
+  "type": "chat.start_typing",
   "payload": {
     "chat_id": "6a022c0a50bf64cf1674e287",
     "user_id": "6727ea0d6f4b3358a701dd7d",
@@ -554,7 +566,6 @@
   }
 }</code></pre>
     </div>
-
 
     <!-- SECCIÓN 3: EVENTOS DE PRESENCIA -->
     <h2>3. EVENTOS DE PRESENCIA</h2>
@@ -576,8 +587,8 @@
       <div class="payload-title">Respuesta Recibida (<code>socket.on("presence.snapshot")</code>):</div>
       <pre><code>{
   "data": {
-    "672800e46f4b3358a701fa9c": true,  // En línea
-    "6931d2081be27e64d77a0059": false  // Desconectado
+    "672800e46f4b3358a701fa9c": true,
+    "6931d2081be27e64d77a0059": false
   }
 }</code></pre>
     </div>
