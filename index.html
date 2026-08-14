@@ -4,221 +4,502 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Documentación API Chat & WebSockets (Verificada Backend Go)</title>
+  <title>API Reference | Chat & WebSockets Service</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
   <style>
     :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --text: #f8fafc;
+      --bg-main: #0b0f17;
+      --bg-sidebar: #111827;
+      --bg-card: #1e293b;
+      --bg-code: #0d1117;
+      --border-color: rgba(255, 255, 255, 0.08);
+
+      --text-main: #f1f5f9;
       --text-muted: #94a3b8;
-      --accent: #38bdf8;
-      --border: #334155;
-      --code-bg: #090d16;
-      --presence-bg: #10b981;
-      --stream-bg: #f59e0b;
-      --warning-bg: rgba(245, 158, 11, 0.1);
-      --warning-border: #f59e0b;
+      --text-dim: #64748b;
+
+      --accent-primary: #38bdf8;
+      --accent-success: #10b981;
+      --accent-warning: #f59e0b;
+      --accent-purple: #818cf8;
+      --accent-danger: #f43f5e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      margin: 0;
-      padding: 2rem;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.5;
+      display: flex;
+      min-height: 100vh;
     }
 
-    .container {
-      max-width: 950px;
-      margin: 0 auto;
+    /* --- SIDEBAR --- */
+    .sidebar {
+      width: 280px;
+      background-color: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      overflow-y: auto;
+      padding: 1.5rem 1rem;
     }
 
-    h1 {
-      border-bottom: 2px solid var(--border);
-      padding-bottom: 0.5rem;
-      color: var(--accent);
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      padding-left: 0.5rem;
     }
 
-    h2 {
-      margin-top: 2.5rem;
-      color: #f43f5e;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 0.3rem;
+    .brand-logo {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-purple));
+      border-radius: 6px;
     }
 
-    .endpoint {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1.5rem;
+    .brand-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-group {
       margin-bottom: 1.5rem;
     }
 
-    .endpoint h3 {
-      margin-top: 0;
-      color: var(--accent);
+    .nav-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .nav-list {
+      list-style: none;
+    }
+
+    .nav-item a {
+      display: block;
+      padding: 0.4rem 0.6rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      border-radius: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .nav-item a:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+    }
+
+    /* --- MAIN CONTENT --- */
+    .main-wrapper {
+      margin-left: 280px;
+      flex: 1;
+      padding: 2.5rem 3rem;
+      max-width: 1200px;
+    }
+
+    .header {
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .header h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .tech-stack {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .tech-pill {
+      font-size: 0.75rem;
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent-primary);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-weight: 500;
+    }
+
+    /* --- SECTION STYLES --- */
+    section {
+      margin-bottom: 4rem;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      color: #fff;
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
 
-    .badge {
-      font-size: 0.75rem;
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      background: #0284c7;
-      color: #fff;
-      font-weight: bold;
+    /* --- ARCHITECTURE TABLE --- */
+    .table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 2.5rem;
     }
 
-    .badge-presence {
-      background: var(--presence-bg);
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.875rem;
+    }
+
+    th {
+      background-color: rgba(0, 0, 0, 0.2);
+      padding: 0.875rem 1rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    td {
+      padding: 0.875rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* --- ENDPOINT CARDS --- */
+    .endpoint-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .endpoint-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.01);
+    }
+
+    .endpoint-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .endpoint-title h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      color: #fff;
+    }
+
+    .endpoint-body {
+      padding: 1.5rem;
+    }
+
+    /* --- BADGES --- */
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-emit {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-primary);
+      border: 1px solid rgba(56, 189, 248, 0.3);
     }
 
     .badge-stream {
-      background: var(--stream-bg);
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-warning);
+      border: 1px solid rgba(245, 158, 11, 0.3);
     }
 
-    .description {
-      color: var(--text-muted);
-      margin-bottom: 1rem;
+    .badge-presence {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-success);
+      border: 1px solid rgba(16, 185, 129, 0.3);
     }
 
-    .restriction-note {
-      background: var(--warning-bg);
-      border-left: 4px solid var(--warning-border);
-      padding: 0.75rem 1rem;
+    /* --- CALLOUT NOTICES --- */
+    .callout {
+      padding: 1rem;
+      border-radius: 8px;
       margin: 1rem 0;
-      border-radius: 0 6px 6px 0;
-      font-size: 0.9rem;
+      font-size: 0.875rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .callout-warning {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.25);
       color: #fde68a;
     }
 
-    .payload-title {
-      font-weight: bold;
-      font-size: 0.9rem;
+    .callout-icon {
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    /* --- CODE BLOCKS & GRID --- */
+    .payload-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
       margin-top: 1rem;
-      margin-bottom: 0.3rem;
-      color: #e2e8f0;
     }
 
-    pre {
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 1rem;
-      overflow-x: auto;
-      font-family: "Fira Code", Consolas, Monaco, "Courier New", Courier, monospace;
-      font-size: 0.875rem;
-      color: #a5f3fc;
-      margin: 0;
+    @media (max-width: 1024px) {
+      .payload-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
-    .summary-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 2rem;
-      background: var(--card-bg);
+    .code-block {
+      background: var(--bg-code);
+      border: 1px solid var(--border-color);
       border-radius: 8px;
       overflow: hidden;
     }
 
-    .summary-table th,
-    .summary-table td {
-      border: 1px solid var(--border);
-      padding: 0.75rem 1rem;
-      text-align: left;
+    .code-header {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.5rem 0.875rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .summary-table th {
-      background: #111827;
-      color: var(--accent);
+    pre {
+      padding: 1rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.825rem;
+      color: #e2e8f0;
+      line-height: 1.6;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    p code,
+    td code {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+      color: var(--accent-primary);
     }
   </style>
 </head>
 
 <body>
 
-  <div class="container">
-    <h1>Documentación API Chat & WebSockets (Consolidada)</h1>
-    <p class="description">Especificación oficial, 100% verificada mediante el código fuente del backend en Go (patrón
-      Command / Response) y logs de ejecución reales.</p>
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo"></div>
+      <span class="brand-title">Chat & WS API</span>
+    </div>
 
-    <!-- RESUMEN DE ARQUITECTURA DE EVENTOS -->
-    <h2>RESUMEN DE ARQUITECTURA DE COMUNICACIÓN</h2>
-    <table class="summary-table">
-      <thead>
-        <tr>
-          <th>Acción Emitida (Cliente ➔ Servidor)</th>
-          <th>Mecanismo de Respuesta / Evento Escuchado</th>
-          <th>Alcance / Receptor</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><code>chat.get_chat_list</code></td>
-          <td>Evento <code>"response"</code></td>
-          <td>Cliente Emisor (Solicitante).</td>
-        </tr>
-        <tr>
-          <td><code>chat.get_chat_messages</code></td>
-          <td>Evento <code>"response"</code></td>
-          <td>Cliente Emisor (Solicitante).</td>
-        </tr>
-        <tr>
-          <td><code>chat.send_message</code></td>
-          <td>Evento <code>"response"</code> (al emisor) + Evento <code>"chat.message"</code> (a la sala)</td>
-          <td>Emisor (ACK) y Sala de Chat (Tiempo real).</td>
-        </tr>
-        <tr>
-          <td><code>chat.edit_message</code></td>
-          <td>Evento <code>"response"</code></td>
-          <td>Cliente Emisor (Solicitante).</td>
-        </tr>
-        <tr>
-          <td><code>chat.delete_messages</code></td>
-          <td>Evento <code>"response"</code></td>
-          <td>Cliente Emisor (Solicitante).</td>
-        </tr>
-        <tr>
-          <td><code>chat.delete_chats</code></td>
-          <td>Evento <code>"response"</code></td>
-          <td>Cliente Emisor (Solicitante).</td>
-        </tr>
-        <tr>
-          <td><code>chat.start_typing</code> / <code>chat.stop_typing</code></td>
-          <td>Evento <code>"chat.typing_status"</code></td>
-          <td>Únicamente al <code>target_user_id</code>.</td>
-        </tr>
-        <tr>
-          <td><code>presence.watch</code></td>
-          <td>Evento <code>"presence.snapshot"</code></td>
-          <td>Cliente Solicitante.</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="nav-group">
+      <div class="nav-title">General</div>
+      <ul class="nav-list">
+        <li class="nav-item"><a href="#resumen">Arquitectura</a></li>
+      </ul>
+    </div>
 
-    <!-- SECCIÓN 1: ACCIONES Y PETICIONES -->
-    <h2>1. PETICIONES Y RESPUESTAS (EVENTO "response")</h2>
-    <p class="description">Estas acciones se envían mediante <code>socket.emit(evento, data)</code> y el servidor
-      devuelve su resultado emitiendo el evento global <code>socket.on("response", ...)</code>.</p>
+    <div class="nav-group">
+      <div class="nav-title">Acciones (Command/Response)</div>
+      <ul class="nav-list">
+        <li class="nav-item"><a href="#chat-get-chat-list">chat.get_chat_list</a></li>
+        <li class="nav-item"><a href="#chat-get-chat-messages">chat.get_chat_messages</a></li>
+        <li class="nav-item"><a href="#chat-send-message">chat.send_message</a></li>
+        <li class="nav-item"><a href="#chat-edit-message">chat.edit_message</a></li>
+        <li class="nav-item"><a href="#chat-delete-messages">chat.delete_messages</a></li>
+        <li class="nav-item"><a href="#chat-delete-chats">chat.delete_chats</a></li>
+        <li class="nav-item"><a href="#chat-typing-action">chat.start / stop_typing</a></li>
+      </ul>
+    </div>
 
-    <!-- 1.1 GET CHAT LIST -->
-    <div class="endpoint">
-      <h3><code>chat.get_chat_list</code> ➔ Respuesta vía: <code>"response"</code></h3>
-      <p class="description">Obtiene la lista resumida de conversaciones activas del usuario.</p>
+    <div class="nav-group">
+      <div class="nav-title">Streams en Tiempo Real</div>
+      <ul class="nav-list">
+        <li class="nav-item"><a href="#stream-chat-message">chat.message</a></li>
+        <li class="nav-item"><a href="#stream-typing-status">chat.typing_status</a></li>
+      </ul>
+    </div>
 
-      <div class="payload-title">1. Emisión del Cliente:</div>
-      <pre><code>// socket.emit("chat.get_chat_list", { ... })
-{
+    <div class="nav-group">
+      <div class="nav-title">Eventos de Presencia</div>
+      <ul class="nav-list">
+        <li class="nav-item"><a href="#presence-snapshot">presence.snapshot</a></li>
+        <li class="nav-item"><a href="#presence-watch">presence.watch</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT AREA -->
+  <main class="main-wrapper">
+
+    <!-- HEADER -->
+    <header class="header">
+      <h1>Especificación WebSocket Chat API</h1>
+      <p>Documentación técnica de eventos, comandos y respuestas en tiempo real.</p>
+      <div class="tech-stack">
+        <span class="tech-pill">Go Backend</span>
+        <span class="tech-pill">Socket.IO / WebSockets</span>
+        <span class="tech-pill">v2.0 Consolidada</span>
+      </div>
+    </header>
+
+    <!-- ARCHITECTURE SUMMARY -->
+    <section id="resumen">
+      <h2>Resumen de Arquitectura de Eventos</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Acción Emitida (Cliente)</th>
+              <th>Mecanismo / Evento de Respuesta</th>
+              <th>Alcance / Receptor</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>chat.get_chat_list</code></td>
+              <td>Evento <code>"response"</code></td>
+              <td>Cliente Emisor (Solicitante)</td>
+            </tr>
+            <tr>
+              <td><code>chat.get_chat_messages</code></td>
+              <td>Evento <code>"response"</code></td>
+              <td>Cliente Emisor (Solicitante)</td>
+            </tr>
+            <tr>
+              <td><code>chat.send_message</code></td>
+              <td><code>"response"</code> (ACK) + <code>"chat.message"</code> (Stream)</td>
+              <td>Emisor y Sala de Chat</td>
+            </tr>
+            <tr>
+              <td><code>chat.edit_message</code></td>
+              <td>Evento <code>"response"</code></td>
+              <td>Cliente Emisor (Solicitante)</td>
+            </tr>
+            <tr>
+              <td><code>chat.delete_messages</code></td>
+              <td>Evento <code>"response"</code></td>
+              <td>Cliente Emisor (Solicitante)</td>
+            </tr>
+            <tr>
+              <td><code>chat.delete_chats</code></td>
+              <td>Evento <code>"response"</code></td>
+              <td>Cliente Emisor (Solicitante)</td>
+            </tr>
+            <tr>
+              <td><code>chat.start_typing</code> / <code>chat.stop_typing</code></td>
+              <td>Evento <code>"chat.typing_status"</code></td>
+              <td>Únicamente al <code>target_user_id</code></td>
+            </tr>
+            <tr>
+              <td><code>presence.snapshot</code></td>
+              <td>Evento <code>"presence.snapshot"</code></td>
+              <td>Cliente Solicitante</td>
+            </tr>
+            <tr>
+              <td><code>presence.watch</code></td>
+              <td>Suscripción pasiva</td>
+              <td>Cliente Solicitante</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 1: PETICIONES Y RESPUESTAS -->
+    <section id="peticiones">
+      <h2>1. PETICIONES Y RESPUESTAS (EVENTO "response")</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+        Estas acciones se envían mediante <code>socket.emit(evento, data)</code> y el servidor devuelve su resultado
+        emitiendo el evento global <code>socket.on("response", ...)</code>.
+      </p>
+
+      <!-- 1.1 GET CHAT LIST -->
+      <article class="endpoint-card" id="chat-get-chat-list">
+        <div class="endpoint-header">
+          <div class="endpoint-title">
+            <span class="badge badge-emit">EMIT</span>
+            <h3>chat.get_chat_list</h3>
+          </div>
+        </div>
+        <div class="endpoint-body">
+          <p style="color: var(--text-muted);">Obtiene la lista resumida de conversaciones activas del usuario.</p>
+          <div class="payload-grid">
+            <div class="code-block">
+              <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span></div>
+              <pre><code>{
   "user_id": "672800e46f4b3358a701fa9c",
   "before_chat_id": "",
   "limit": 10
 }</code></pre>
-
-      <div class="payload-title">2. Respuesta del Servidor (<code>socket.on("response")</code>):</div>
-      <pre><code>{
+            </div>
+            <div class="code-block">
+              <div class="code-header"><span>2. Respuesta del Servidor (socket.on("response"))</span><span>JSON</span>
+              </div>
+              <pre><code>{
   "type": "response",
   "payload": {
     "chats": [
@@ -237,24 +518,36 @@
     "has_more": false
   }
 }</code></pre>
-    </div>
+            </div>
+          </div>
+        </div>
+      </article>
 
-    <!-- 1.2 GET CHAT MESSAGES -->
-    <div class="endpoint">
-      <h3><code>chat.get_chat_messages</code> ➔ Respuesta vía: <code>"response"</code></h3>
-      <p class="description">Obtiene el historial detallado de mensajes de una conversación específica.</p>
-
-      <div class="payload-title">1. Emisión del Cliente:</div>
-      <pre><code>// socket.emit("chat.get_chat_messages", { ... })
-{
+      <!-- 1.2 GET CHAT MESSAGES -->
+      <article class="endpoint-card" id="chat-get-chat-messages">
+        <div class="endpoint-header">
+          <div class="endpoint-title">
+            <span class="badge badge-emit">EMIT</span>
+            <h3>chat.get_chat_messages</h3>
+          </div>
+        </div>
+        <div class="endpoint-body">
+          <p style="color: var(--text-muted);">Obtiene el historial detallado de mensajes de una conversación
+            específica.</p>
+          <div class="payload-grid">
+            <div class="code-block">
+              <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span></div>
+              <pre><code>{
   "chat_id": "6a022c0a50bf64cf1674e287",
   "user_id": "672800e46f4b3358a701fa9c",
   "before_message_id": "",
   "limit": 20
 }</code></pre>
-
-      <div class="payload-title">2. Respuesta del Servidor (<code>socket.on("response")</code>):</div>
-      <pre><code>{
+            </div>
+            <div class="code-block">
+              <div class="code-header"><span>2. Respuesta del Servidor (socket.on("response"))</span><span>JSON</span>
+              </div>
+              <pre><code>{
   "type": "response",
   "payload": {
     "messages": [
@@ -295,19 +588,27 @@
     "has_more": false
   }
 }</code></pre>
-    </div>
+            </div>
+          </div>
+        </div>
+      </article>
 
-    <!-- 1.3 SEND MESSAGE -->
-    <div class="endpoint">
-      <h3><code>chat.send_message</code> ➔ Respuesta vía: <code>"response"</code> (ACK) y <code>"chat.message"</code>
-        (Stream)</h3>
-      <p class="description">Envía un nuevo mensaje. El emisor recibe la confirmación formal por
-        <code>"response"</code>, y el mensaje en tiempo real se propaga a la sala vía <code>"chat.message"</code>.
-      </p>
-
-      <div class="payload-title">1. Emisión del Cliente:</div>
-      <pre><code>// socket.emit("chat.send_message", { ... })
-{
+      <!-- 1.3 SEND MESSAGE -->
+      <article class="endpoint-card" id="chat-send-message">
+        <div class="endpoint-header">
+          <div class="endpoint-title">
+            <span class="badge badge-emit">EMIT</span>
+            <h3>chat.send_message</h3>
+          </div>
+        </div>
+        <div class="endpoint-body">
+          <p style="color: var(--text-muted);">Envía un nuevo mensaje. El emisor recibe la confirmación formal por
+            <code>"response"</code>, y el mensaje en tiempo real se propaga a la sala vía <code>"chat.message"</code>.
+          </p>
+          <div class="payload-grid">
+            <div class="code-block">
+              <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span></div>
+              <pre><code>{
   "chat_id": "6a022c0a50bf64cf1674e287",
   "sender_id": "672800e46f4b3358a701fa9c",
   "message_type": 0,
@@ -325,9 +626,11 @@
   "sender_device_id": "uuid-temp-mobile-12345",
   "temp_id": "aTHiJM93SriZUjZ0EOzx9"
 }</code></pre>
-
-      <div class="payload-title">2. Respuesta al Emisor (<code>socket.on("response")</code>):</div>
-      <pre><code>{
+            </div>
+            <div class="code-block">
+              <div class="code-header"><span>2. Respuesta al Emisor (socket.on("response"))</span><span>JSON</span>
+              </div>
+              <pre><code>{
   "type": "response",
   "payload": {
     "id": "67a1b2c3d4e5f67890123457",
@@ -363,30 +666,45 @@
     }
   }
 }</code></pre>
-    </div>
+            </div>
+          </div>
+        </div>
+      </article>
 
-    <!-- 1.4 EDIT MESSAGE -->
-    <div class="endpoint">
-      <h3><code>chat.edit_message</code> ➔ Respuesta vía: <code>"response"</code></h3>
-      <p class="description">Edita el contenido de un mensaje existente, <strong>siempre y cuando no hayan transcurrido
-          más de 3 minutos</strong> desde su creación. Devuelve la entidad actualizada dentro del <code>payload</code>
-        con los sellos de tiempo en formato Protobuf Timestamp (<code>seconds</code> y <code>nanos</code>).</p>
+      <!-- 1.4 EDIT MESSAGE -->
+      <article class="endpoint-card" id="chat-edit-message">
+        <div class="endpoint-header">
+          <div class="endpoint-title">
+            <span class="badge badge-emit">EMIT</span>
+            <h3>chat.edit_message</h3>
+          </div>
+        </div>
+        <div class="endpoint-body">
+          <p style="color: var(--text-muted);">Edita el contenido de un mensaje existente, siempre y cuando no hayan
+            transcurrido más de 3 minutos desde su creación. Devuelve la entidad actualizada dentro del payload con los
+            sellos de tiempo en formato Protobuf Timestamp (<code>seconds</code> y <code>nanos</code>).</p>
 
-      <blockquote class="restriction-note">
-        <strong>Restricción:</strong> Solo se permite editar un mensaje dentro de los primeros <strong>3 minutos (180
-          segundos)</strong> posteriores a su envío (<code>created_at</code>). Si se intenta editar después de este
-        lapso, el servidor rechazará la solicitud devolviendo un error.
-      </blockquote>
+          <div class="callout callout-warning">
+            <span class="callout-icon">⚠️</span>
+            <div>
+              <strong>Restricción:</strong> Solo se permite editar un mensaje dentro de los primeros <strong>3 minutos
+                (180 segundos)</strong> posteriores a su envío (<code>created_at</code>). Si se intenta editar después
+              de este lapso, el servidor rechazará la solicitud devolviendo un error.
+            </div>
+          </div>
 
-      <div class="payload-title">1. Emisión del Cliente:</div>
-      <pre><code>// socket.emit("chat.edit_message", { ... })
-{
+          <div class="payload-grid">
+            <div class="code-block">
+              <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span></div>
+              <pre><code>{
   "message_id": "6a6145b055502227402bc597",
   "new_message": "Hola, este es un mensaje de prueba-Actualiza2"
 }</code></pre>
-
-      <div class="payload-title">2. Respuesta del Servidor (<code>socket.on("response")</code>):</div>
-      <pre><code>{
+            </div>
+            <div class="code-block">
+              <div class="code-header"><span>2. Respuesta del Servidor (socket.on("response"))</span><span>JSON</span>
+              </div>
+              <pre><code>{
   "type": "response",
   "payload": {
     "id": "6a6145b055502227402bc597",
@@ -428,21 +746,39 @@
     }
   }
 }</code></pre>
-    </div>
+            </div>
+          </div>
+        </div>
+      </article>
 
-    <!-- 1.5 DELETE MESSAGES -->
-    <div class="endpoint">
-      <h3><code>chat.delete_messages</code> ➔ Respuesta vía: <code>"response"</code></h3>
-      <p class="description">
-        Elimina uno o varios mensajes (acepta un arreglo de IDs). Si <code>delete_for_everyone</code> es
-        <code>true</code>, elimina los
-        mensajes para todos los miembros del chat (válido únicamente dentro de los primeros 10 minutos desde su envío).
-        Si es <code>false</code>, solo se ocultan para el usuario que realiza la petición.
-      </p>
+      <!-- 1.5 DELETE MESSAGES -->
+      <article class="endpoint-card" id="chat-delete-messages">
+        <div class="endpoint-header">
+          <div class="endpoint-title">
+            <span class="badge badge-emit">EMIT</span>
+            <h3>chat.delete_messages</h3>
+          </div>
+        </div>
+        <div class="endpoint-body">
+          <p style="color: var(--text-muted);">Elimina uno o varios mensajes (acepta un arreglo de IDs). Si
+            <code>delete_for_everyone</code> es <code>true</code>, elimina los mensajes para todos los miembros del chat
+            (válido únicamente dentro de los primeros 10 minutos desde su envío). Si es <code>false</code>, solo se
+            ocultan para el usuario que realiza la petición.
+          </p>
 
-      <div class="payload-title">1. Emisión del Cliente:</div>
-      <pre><code>// socket.emit("chat.delete_messages", { ... })
-{
+          <div class="callout callout-warning">
+            <span class="callout-icon">⚠️</span>
+            <div>
+              <strong>Restricción:</strong> Solo se permite eliminar un mensaje para todos dentro de los primeros
+              <strong>10 minutos (600 segundos)</strong> posteriores a su envío (<code>created_at</code>). Si se intenta
+              eliminar después de este lapso, el servidor rechazará la solicitud devolviendo un error.
+            </div>
+          </div>
+
+          <div class="payload-grid">
+            <div class="code-block">
+              <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span></div>
+              <pre><code>{
   "chat_id": "6a022c0a50bf64cf1674e287",
   "user_id": "672800e46f4b3358a701fa9c",
   "message_ids": [
@@ -451,9 +787,11 @@
   ],
   "delete_for_everyone": true
 }</code></pre>
-
-      <div class="payload-title">2. Respuesta del Servidor (<code>socket.on("response")</code>):</div>
-      <pre><code>{
+            </div>
+            <div class="code-block">
+              <div class="code-header"><span>2. Respuesta del Servidor (socket.on("response"))</span><span>JSON</span>
+              </div>
+              <pre><code>{
   "type": "response",
   "payload": {
     "success": true,
@@ -464,17 +802,26 @@
     ]
   }
 }</code></pre>
-    </div>
+            </div>
+          </div>
+        </div>
+      </article>
 
-    <!-- 1.6 DELETE CHATS -->
-    <div class="endpoint">
-      <h3><code>chat.delete_chats</code> ➔ Respuesta vía: <code>"response"</code></h3>
-      <p class="description">Elimina uno o varios chats (acepta un arreglo de IDs) para el usuario actual, con opción de
-        eliminar para todos los participantes.</p>
-
-      <div class="payload-title">1. Emisión del Cliente:</div>
-      <pre><code>// socket.emit("chat.delete_chats", { ... })
-{
+      <!-- 1.6 DELETE CHATS -->
+      <article class="endpoint-card" id="chat-delete-chats">
+        <div class="endpoint-header">
+          <div class="endpoint-title">
+            <span class="badge badge-emit">EMIT</span>
+            <h3>chat.delete_chats</h3>
+          </div>
+        </div>
+        <div class="endpoint-body">
+          <p style="color: var(--text-muted);">Elimina uno o varios chats (acepta un arreglo de IDs) para el usuario
+            actual, con opción de eliminar para todos los participantes.</p>
+          <div class="payload-grid">
+            <div class="code-block">
+              <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span></div>
+              <pre><code>{
   "user_id": "672800e46f4b3358a701fa9d",
   "chat_ids": [
     "6a022c0a50bf64cf1674e287",
@@ -482,9 +829,11 @@
   ],
   "delete_for_everyone": false
 }</code></pre>
-
-      <div class="payload-title">2. Respuesta del Servidor (<code>socket.on("response")</code>):</div>
-      <pre><code>{
+            </div>
+            <div class="code-block">
+              <div class="code-header"><span>2. Respuesta del Servidor (socket.on("response"))</span><span>JSON</span>
+              </div>
+              <pre><code>{
   "type": "response",
   "payload": {
     "success": true,
@@ -495,33 +844,56 @@
     ]
   }
 }</code></pre>
-    </div>
+            </div>
+          </div>
+        </div>
+      </article>
 
-    <!-- 1.7 START / STOP TYPING -->
-    <div class="endpoint">
-      <h3><code>chat.start_typing</code> / <code>chat.stop_typing</code> <span class="badge">Acción</span></h3>
-      <p class="description">Notifica el estado de escritura del usuario. Requiere <code>target_user_id</code>.</p>
-
-      <div class="payload-title">Petición (Cliente ➔ Servidor):</div>
-      <pre><code>// socket.emit("chat.start_typing", { ... })
-{
+      <!-- 1.7 TYPING ACTIONS -->
+      <article class="endpoint-card" id="chat-typing-action">
+        <div class="endpoint-header">
+          <div class="endpoint-title">
+            <span class="badge badge-emit">EMIT</span>
+            <h3>chat.start_typing / chat.stop_typing</h3>
+          </div>
+        </div>
+        <div class="endpoint-body">
+          <p style="color: var(--text-muted);">Notifica el estado de escritura del usuario. Requiere
+            <code>target_user_id</code>.
+          </p>
+          <div class="code-block" style="margin-top: 1rem;">
+            <div class="code-header"><span>Petición (Cliente ➔ Servidor)</span><span>JSON</span></div>
+            <pre><code>{
   "chat_id": "6a022c0a50bf64cf1674e287",
   "user_id": "6727ea0d6f4b3358a701dd7d",
   "target_user_id": "672800e46f4b3358a701fa9c"
 }</code></pre>
-    </div>
+          </div>
+        </div>
+      </article>
+    </section>
 
-    <!-- SECCIÓN 2: EVENTOS STREAM (SERVIDOR ➔ CLIENTES) -->
-    <h2>2. EVENTOS STREAM EN TIEMPO REAL (ESCUCHADORES)</h2>
+    <!-- SECTION 2: STREAMS EN TIEMPO REAL -->
+    <section id="streams">
+      <h2>2. EVENTOS STREAM EN TIEMPO REAL (ESCUCHADORES)</h2>
 
-    <!-- 2.1 CHAT MESSAGE INCOMING -->
-    <div class="endpoint">
-      <h3>Evento: <code>chat.message</code> <span class="badge badge-stream">Stream</span></h3>
-      <p class="description">Evento pasivo transmitido por el backend (vía `SendToRoomEvent` y `SendToUserEvent`) cuando
-        se procesa un mensaje. Lo escuchan los destinatarios y otros dispositivos del emisor.</p>
-
-      <div class="payload-title">Payload Recibido (<code>socket.on("chat.message", callback)</code>):</div>
-      <pre><code>{
+      <!-- 2.1 STREAM CHAT MESSAGE -->
+      <article class="endpoint-card" id="stream-chat-message">
+        <div class="endpoint-header">
+          <div class="endpoint-title">
+            <span class="badge badge-stream">LISTEN</span>
+            <h3>Evento: chat.message</h3>
+          </div>
+        </div>
+        <div class="endpoint-body">
+          <p style="color: var(--text-muted);">Evento pasivo transmitido por el backend (vía
+            <code>SendToRoomEvent</code> y <code>SendToUserEvent</code>) cuando se procesa un mensaje. Lo escuchan los
+            destinatarios y otros dispositivos del emisor.
+          </p>
+          <div class="code-block" style="margin-top: 1rem;">
+            <div class="code-header"><span>Payload Recibido (socket.on("chat.message",
+                callback))</span><span>JSON</span></div>
+            <pre><code>{
   "id": "67a1b2c3d4e5f67890123457",
   "chat_id": "6a022c0a50bf64cf1674e287",
   "temp_id": "aTHiJM93SriZUjZ0EOzx9",
@@ -554,15 +926,26 @@
     "text": "Hola buen dia"
   }
 }</code></pre>
-    </div>
+          </div>
+        </div>
+      </article>
 
-    <!-- 2.2 CHAT TYPING STATUS -->
-    <div class="endpoint">
-      <h3>Evento: <code>chat.typing_status</code> <span class="badge badge-stream">Stream</span></h3>
-      <p class="description">Evento pasivo retransmitido por el servidor únicamente al <code>target_user_id</code>.</p>
-
-      <div class="payload-title">Payload Recibido (<code>socket.on("chat.typing_status", callback)</code>):</div>
-      <pre><code>{
+      <!-- 2.2 STREAM TYPING STATUS -->
+      <article class="endpoint-card" id="stream-typing-status">
+        <div class="endpoint-header">
+          <div class="endpoint-title">
+            <span class="badge badge-stream">LISTEN</span>
+            <h3>Evento: chat.typing_status</h3>
+          </div>
+        </div>
+        <div class="endpoint-body">
+          <p style="color: var(--text-muted);">Evento pasivo retransmitted por el servidor únicamente al
+            <code>target_user_id</code>.
+          </p>
+          <div class="code-block" style="margin-top: 1rem;">
+            <div class="code-header"><span>Payload Recibido (socket.on("chat.typing_status",
+                callback))</span><span>JSON</span></div>
+            <pre><code>{
   "type": "chat.start_typing",
   "payload": {
     "chat_id": "6a022c0a50bf64cf1674e287",
@@ -570,47 +953,70 @@
     "target_user_id": "672800e46f4b3358a701fa9c"
   }
 }</code></pre>
-    </div>
+          </div>
+        </div>
+      </article>
+    </section>
 
-    <!-- SECCIÓN 3: EVENTOS DE PRESENCIA -->
-    <h2>3. EVENTOS DE PRESENCIA</h2>
+    <!-- SECTION 3: EVENTOS DE PRESENCIA -->
+    <section id="presencia">
+      <h2>3. EVENTOS DE PRESENCIA</h2>
 
-    <!-- 3.1 PRESENCE SNAPSHOT -->
-    <div class="endpoint">
-      <h3><code>presence.snapshot</code> <span class="badge badge-presence">Presencia</span></h3>
-      <p class="description">Solicita la presencia de un listado de usuarios.</p>
-
-      <div class="payload-title">Petición (Cliente ➔ Servidor):</div>
-      <pre><code>// socket.emit("presence.snapshot", { ... })
-{
+      <!-- 3.1 PRESENCE SNAPSHOT -->
+      <article class="endpoint-card" id="presence-snapshot">
+        <div class="endpoint-header">
+          <div class="endpoint-title">
+            <span class="badge badge-presence">PRESENCIA</span>
+            <h3>presence.snapshot</h3>
+          </div>
+        </div>
+        <div class="endpoint-body">
+          <p style="color: var(--text-muted);">Solicita la presencia de un listado de usuarios.</p>
+          <div class="payload-grid">
+            <div class="code-block">
+              <div class="code-header"><span>Petición (Cliente ➔ Servidor)</span><span>JSON</span></div>
+              <pre><code>{
   "user_ids": [
     "672800e46f4b3358a701fa9c",
     "6931d2081be27e64d77a0059"
   ]
 }</code></pre>
-
-      <div class="payload-title">Respuesta Recibida (<code>socket.on("presence.snapshot")</code>):</div>
-      <pre><code>{
+            </div>
+            <div class="code-block">
+              <div class="code-header"><span>Respuesta Recibida (socket.on("presence.snapshot"))</span><span>JSON</span>
+              </div>
+              <pre><code>{
   "data": {
     "672800e46f4b3358a701fa9c": true,
     "6931d2081be27e64d77a0059": false
   }
 }</code></pre>
-    </div>
+            </div>
+          </div>
+        </div>
+      </article>
 
-    <!-- 3.2 PRESENCE WATCH -->
-    <div class="endpoint">
-      <h3><code>presence.watch</code> <span class="badge badge-presence">Presencia</span></h3>
-      <p class="description">Suscripción en tiempo real a la presencia de un usuario específico.</p>
-
-      <div class="payload-title">Petición (Cliente ➔ Servidor):</div>
-      <pre><code>// socket.emit("presence.watch", { ... })
-{
+      <!-- 3.2 PRESENCE WATCH -->
+      <article class="endpoint-card" id="presence-watch">
+        <div class="endpoint-header">
+          <div class="endpoint-title">
+            <span class="badge badge-presence">PRESENCIA</span>
+            <h3>presence.watch</h3>
+          </div>
+        </div>
+        <div class="endpoint-body">
+          <p style="color: var(--text-muted);">Suscripción en tiempo real a la presencia de un usuario específico.</p>
+          <div class="code-block" style="margin-top: 1rem;">
+            <div class="code-header"><span>Petición (Cliente ➔ Servidor)</span><span>JSON</span></div>
+            <pre><code>{
   "user_id": "6931d2081be27e64d77a0059"
 }</code></pre>
-    </div>
+          </div>
+        </div>
+      </article>
+    </section>
 
-  </div>
+  </main>
 
 </body>
 
