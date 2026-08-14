@@ -16,6 +16,8 @@
       --code-bg: #090d16;
       --presence-bg: #10b981;
       --stream-bg: #f59e0b;
+      --warning-bg: rgba(245, 158, 11, 0.1);
+      --warning-border: #f59e0b;
     }
 
     body {
@@ -83,6 +85,16 @@
       margin-bottom: 1rem;
     }
 
+    .restriction-note {
+      background: var(--warning-bg);
+      border-left: 4px solid var(--warning-border);
+      padding: 0.75rem 1rem;
+      margin: 1rem 0;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.9rem;
+      color: #fde68a;
+    }
+
     .payload-title {
       font-weight: bold;
       font-size: 0.9rem;
@@ -129,7 +141,7 @@
 <body>
 
   <div class="container">
-    <h1>Documentación API Chat & WebSockets(Version Actualizada)</h1>
+    <h1>Documentación API Chat & WebSockets (Consolidada)</h1>
     <p class="description">Especificación oficial, 100% verificada mediante el código fuente del backend en Go (patrón
       Command / Response) y logs de ejecución reales.</p>
 
@@ -165,12 +177,12 @@
           <td>Cliente Emisor (Solicitante).</td>
         </tr>
         <tr>
-          <td><code>chat.delete_message</code> / <code>chat.delete_chat</code></td>
+          <td><code>chat.delete_messages</code></td>
           <td>Evento <code>"response"</code></td>
           <td>Cliente Emisor (Solicitante).</td>
         </tr>
         <tr>
-          <td><code>chat.delete_messages</code></td>
+          <td><code>chat.delete_chats</code></td>
           <td>Evento <code>"response"</code></td>
           <td>Cliente Emisor (Solicitante).</td>
         </tr>
@@ -302,7 +314,7 @@
   "message": "Hola, ¿cómo estás?",
   "ciphertext": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "source": "",
-  "response_msg_id": "",
+  "response_msg_id": "6a74cc9eb4d074f7ceb342c4",
   "keys": [
     {
       "device_id": "dev_mobile_01",
@@ -356,8 +368,15 @@
     <!-- 1.4 EDIT MESSAGE -->
     <div class="endpoint">
       <h3><code>chat.edit_message</code> ➔ Respuesta vía: <code>"response"</code></h3>
-      <p class="description">Edita un mensaje existente. Devuelve la entidad dentro del <code>payload</code> con los
-        sellos de tiempo en formato Protobuf Timestamp (<code>seconds</code> y <code>nanos</code>).</p>
+      <p class="description">Edita el contenido de un mensaje existente, <strong>siempre y cuando no hayan transcurrido
+          más de 3 minutos</strong> desde su creación. Devuelve la entidad actualizada dentro del <code>payload</code>
+        con los sellos de tiempo en formato Protobuf Timestamp (<code>seconds</code> y <code>nanos</code>).</p>
+
+      <blockquote class="restriction-note">
+        <strong>Restricción:</strong> Solo se permite editar un mensaje dentro de los primeros <strong>3 minutos (180
+          segundos)</strong> posteriores a su envío (<code>created_at</code>). Si se intenta editar después de este
+        lapso, el servidor rechazará la solicitud devolviendo un error.
+      </blockquote>
 
       <div class="payload-title">1. Emisión del Cliente:</div>
       <pre><code>// socket.emit("chat.edit_message", { ... })
@@ -411,59 +430,14 @@
 }</code></pre>
     </div>
 
-    <!-- 1.5 DELETE MESSAGE -->
-    <div class="endpoint">
-      <h3><code>chat.delete_message</code> ➔ Respuesta vía: <code>"response"</code></h3>
-      <p class="description">Elimina un mensaje específico de la conversación.</p>
-
-      <div class="payload-title">1. Emisión del Cliente:</div>
-      <pre><code>// socket.emit("chat.delete_message", { ... })
-{
-  "message_id": "67a1b2c3d4e5f67890123457",
-  "chat_id": "6a022c0a50bf64cf1674e287",
-  "user_id": "672800e46f4b3358a701fa9c"
-}</code></pre>
-
-      <div class="payload-title">2. Respuesta del Servidor (<code>socket.on("response")</code>):</div>
-      <pre><code>{
-  "type": "response",
-  "payload": {
-    "message_id": "67a1b2c3d4e5f67890123457",
-    "chat_id": "6a022c0a50bf64cf1674e287",
-    "deleted": true
-  }
-}</code></pre>
-    </div>
-
-    <!-- 1.6 DELETE CHAT -->
-    <div class="endpoint">
-      <h3><code>chat.delete_chat</code> ➔ Respuesta vía: <code>"response"</code></h3>
-      <p class="description">Elimina un chat completo para el usuario solicitante.</p>
-
-      <div class="payload-title">1. Emisión del Cliente:</div>
-      <pre><code>// socket.emit("chat.delete_chat", { ... })
-{
-  "chat_id": "6a022c0a50bf64cf1674e287",
-  "profile_id": "672800e46f4b3358a701fa9d"
-}</code></pre>
-
-      <div class="payload-title">2. Respuesta del Servidor (<code>socket.on("response")</code>):</div>
-      <pre><code>{
-  "type": "response",
-  "payload": {
-    "chat_id": "6a022c0a50bf64cf1674e287",
-    "deleted": true
-  }
-}</code></pre>
-    </div>
-
-    <!-- 1.7 DELETE MESSAGES -->
+    <!-- 1.5 DELETE MESSAGES -->
     <div class="endpoint">
       <h3><code>chat.delete_messages</code> ➔ Respuesta vía: <code>"response"</code></h3>
       <p class="description">
-        Elimina mensajes individuales o por lote. Si <code>delete_for_everyone</code> es <code>true</code>, elimina el
-        mensaje para todos los miembros del chat (válido únicamente dentro de los primeros 10 minutos desde su envío).
-        Si es <code>false</code>, solo se oculta para el usuario que realiza la petición.
+        Elimina uno o varios mensajes (acepta un arreglo de IDs). Si <code>delete_for_everyone</code> es
+        <code>true</code>, elimina los
+        mensajes para todos los miembros del chat (válido únicamente dentro de los primeros 10 minutos desde su envío).
+        Si es <code>false</code>, solo se ocultan para el usuario que realiza la petición.
       </p>
 
       <div class="payload-title">1. Emisión del Cliente:</div>
@@ -492,7 +466,38 @@
 }</code></pre>
     </div>
 
-    <!-- 1.8 START / STOP TYPING -->
+    <!-- 1.6 DELETE CHATS -->
+    <div class="endpoint">
+      <h3><code>chat.delete_chats</code> ➔ Respuesta vía: <code>"response"</code></h3>
+      <p class="description">Elimina uno o varios chats (acepta un arreglo de IDs) para el usuario actual, con opción de
+        eliminar para todos los participantes.</p>
+
+      <div class="payload-title">1. Emisión del Cliente:</div>
+      <pre><code>// socket.emit("chat.delete_chats", { ... })
+{
+  "user_id": "672800e46f4b3358a701fa9d",
+  "chat_ids": [
+    "6a022c0a50bf64cf1674e287",
+    "7b133d1b61ca75da2785f398"
+  ],
+  "delete_for_everyone": false
+}</code></pre>
+
+      <div class="payload-title">2. Respuesta del Servidor (<code>socket.on("response")</code>):</div>
+      <pre><code>{
+  "type": "response",
+  "payload": {
+    "success": true,
+    "deleted_count": 2,
+    "deleted_chat_ids": [
+      "6a022c0a50bf64cf1674e287",
+      "7b133d1b61ca75da2785f398"
+    ]
+  }
+}</code></pre>
+    </div>
+
+    <!-- 1.7 START / STOP TYPING -->
     <div class="endpoint">
       <h3><code>chat.start_typing</code> / <code>chat.stop_typing</code> <span class="badge">Acción</span></h3>
       <p class="description">Notifica el estado de escritura del usuario. Requiere <code>target_user_id</code>.</p>
@@ -554,7 +559,7 @@
     <!-- 2.2 CHAT TYPING STATUS -->
     <div class="endpoint">
       <h3>Evento: <code>chat.typing_status</code> <span class="badge badge-stream">Stream</span></h3>
-      <p class="description">Evento pasivo retransmitted por el servidor únicamente al <code>target_user_id</code>.</p>
+      <p class="description">Evento pasivo retransmitido por el servidor únicamente al <code>target_user_id</code>.</p>
 
       <div class="payload-title">Payload Recibido (<code>socket.on("chat.typing_status", callback)</code>):</div>
       <pre><code>{
