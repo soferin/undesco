@@ -368,6 +368,8 @@
         <li class="nav-item"><a href="#chat-get-chat-list">chat.get_chat_list</a></li>
         <li class="nav-item"><a href="#chat-get-chat-messages">chat.get_chat_messages</a></li>
         <li class="nav-item"><a href="#chat-send-message">chat.send_message</a></li>
+        <li class="nav-item"><a href="#chat-mark-message-delivered">chat.mark_message_delivered</a></li>
+        <li class="nav-item"><a href="#chat-mark-message-read">chat.mark_message_read</a></li>
         <li class="nav-item"><a href="#chat-edit-message">chat.edit_message</a></li>
         <li class="nav-item"><a href="#chat-delete-messages">chat.delete_messages</a></li>
         <li class="nav-item"><a href="#chat-delete-chats">chat.delete_chats</a></li>
@@ -379,6 +381,7 @@
       <div class="nav-title">Streams en Tiempo Real</div>
       <ul class="nav-list">
         <li class="nav-item"><a href="#stream-chat-message">chat.message</a></li>
+        <li class="nav-item"><a href="#stream-message-status">chat.message_status</a></li>
         <li class="nav-item"><a href="#stream-typing-status">chat.typing_status</a></li>
       </ul>
     </div>
@@ -421,38 +424,55 @@
           <tbody>
             <tr>
               <td><code>chat.get_chat_list</code></td>
-              <td>Evento <code>"response"</code></td>
+              <td>Evento <code>"response"</code> (<code>GetChatListResponse</code>)</td>
               <td>Cliente Emisor (Solicitante)</td>
             </tr>
             <tr>
               <td><code>chat.get_chat_messages</code></td>
-              <td>Evento <code>"response"</code></td>
+              <td>Evento <code>"response"</code> (<code>GetChatMessagesResponse</code>)</td>
               <td>Cliente Emisor (Solicitante)</td>
             </tr>
             <tr>
               <td><code>chat.send_message</code></td>
-              <td><code>"response"</code> (ACK) + <code>"chat.message"</code> (Stream)</td>
-              <td>Emisor y Sala de Chat</td>
+              <td>Evento <code>"response"</code> (ACK) + Evento <code>"chat.message"</code></td>
+              <td>Emisor (ACK) y Destinatario (<code>target_user_id</code>)</td>
+            </tr>
+            <tr>
+              <td><code>chat.mark_message_delivered</code></td>
+              <td>Evento <code>"response"</code> (<code>MarkMessagesResponse</code>) + Evento
+                <code>"chat.message_status"</code></td>
+              <td>Receptor confirma entrega (ACK); Remitente original (<code>target_user_id</code>) recibe cambio a
+                <code>DELIVERED</code></td>
+            </tr>
+            <tr>
+              <td><code>chat.mark_message_read</code></td>
+              <td>Evento <code>"response"</code> (<code>MarkMessagesResponse</code>) + Evento
+                <code>"chat.message_status"</code></td>
+              <td>Receptor confirma lectura (ACK); Remitente original (<code>target_user_id</code>) recibe cambio a
+                <code>READ</code></td>
             </tr>
             <tr>
               <td><code>chat.edit_message</code></td>
-              <td>Evento <code>"response"</code></td>
-              <td>Cliente Emisor (Solicitante)</td>
+              <td>Evento <code>"response"</code> (<code>ChatMessageResponse</code>) + Evento <code>"chat.message"</code>
+              </td>
+              <td>Cliente Emisor y Destinatario (<code>target_user_id</code>)</td>
             </tr>
             <tr>
               <td><code>chat.delete_messages</code></td>
-              <td>Evento <code>"response"</code></td>
-              <td>Cliente Emisor (Solicitante)</td>
+              <td>Evento <code>"response"</code> (<code>DeleteMessagesResponse</code>) + Evento
+                <code>"chat.message"</code></td>
+              <td>Cliente Emisor y Destinatario (si <code>delete_for_everyone</code>)</td>
             </tr>
             <tr>
               <td><code>chat.delete_chats</code></td>
-              <td>Evento <code>"response"</code></td>
+              <td>Evento <code>"response"</code> (<code>DeleteChatsResponse</code>)</td>
               <td>Cliente Emisor (Solicitante)</td>
             </tr>
             <tr>
               <td><code>chat.start_typing</code> / <code>chat.stop_typing</code></td>
-              <td>Evento <code>"chat.typing_status"</code></td>
-              <td>Únicamente al <code>target_user_id</code></td>
+              <td>Evento <code>"response"</code> (<code>ChatResponse</code>) + Evento <code>"chat.typing_status"</code>
+              </td>
+              <td>Cliente Emisor (ACK) y únicamente al <code>target_user_id</code></td>
             </tr>
             <tr>
               <td><code>presence.snapshot</code></td>
@@ -461,7 +481,7 @@
             </tr>
             <tr>
               <td><code>presence.watch</code></td>
-              <td>Suscripción pasiva</td>
+              <td>Suscripción pasiva (Eventos <code>"presence.update"</code>)</td>
               <td>Cliente Solicitante</td>
             </tr>
           </tbody>
@@ -509,10 +529,17 @@
           "profile_id": "672800e46f4b3358a701fa9d",
           "user_id": "672800e46f4b3358a701fa9c",
           "avatar": "https://storage.googleapis.com/media-temp.cuboconecta.com/avatars/1778611747_media.jpg",
-          "name": "Carlos Santana",
-          "last_message": "Esta es una prueba",
-          "created_at": "2026-07-22T20:14:37.218Z"
-        }
+          "name": "Carlos Santana"
+        },
+        "last_message": {
+          "message_id": "67a1b2c3d4e5f67890123456",
+          "message_type": "TEXT",
+          "content": "Esta es una prueba",
+          "sender_id": "672800e46f4b3358a701fa9c",
+          "created_at": "2026-07-22T20:14:37.218Z",
+          "status": "READ"
+        },
+        "last_seen_at": "2026-07-22T20:14:37.218Z"
       }
     ],
     "has_more": false
@@ -582,7 +609,8 @@
           "sender_profile_id": "672800e46f4b3358a701fa9d",
           "sender_name": "Tú",
           "text": "Hola buen dia"
-        }
+        },
+        "status": "READ"
       }
     ],
     "has_more": false
@@ -603,17 +631,18 @@
         </div>
         <div class="endpoint-body">
           <p style="color: var(--text-muted);">Envía un nuevo mensaje. El emisor recibe la confirmación formal por
-            <code>"response"</code>, y el mensaje en tiempo real se propaga a la sala vía <code>"chat.message"</code>.
+            <code>"response"</code>, y si se envía <code>target_user_id</code> se retransmite directamente al
+            destinatario mediante <code>"chat.message"</code>.
           </p>
           <div class="payload-grid">
             <div class="code-block">
               <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span></div>
               <pre><code>{
   "chat_id": "6a022c0a50bf64cf1674e287",
-  "sender_id": "672800e46f4b3358a701fa9c",
-  "message_type": 0,
+  "user_id": "672800e46f4b3358a701fa9c",
+  "target_user_id": "6727ea0d6f4b3358a701dd7d",
+  "message_type": "TEXT",
   "message": "Hola, ¿cómo estás?",
-  "ciphertext": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "source": "",
   "response_msg_id": "6a74cc9eb4d074f7ceb342c4",
   "keys": [
@@ -624,7 +653,8 @@
   ],
   "nonce": "nonce_val_999",
   "sender_device_id": "uuid-temp-mobile-12345",
-  "temp_id": "aTHiJM93SriZUjZ0EOzx9"
+  "temp_id": "aTHiJM93SriZUjZ0EOzx9",
+  "status": "SENT"
 }</code></pre>
             </div>
             <div class="code-block">
@@ -644,7 +674,7 @@
     },
     "message_type": "TEXT",
     "message": "Hola, ¿cómo estás?",
-    "ciphertext": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ciphertext": "",
     "source": "",
     "created_at": "2026-07-22T20:15:00.000Z",
     "updated_at": "",
@@ -663,7 +693,8 @@
       "sender_profile_id": "672800e46f4b3358a701fa9d",
       "sender_name": "Tú",
       "text": "Hola buen dia"
-    }
+    },
+    "status": "SENT"
   }
 }</code></pre>
             </div>
@@ -671,7 +702,95 @@
         </div>
       </article>
 
-      <!-- 1.4 EDIT MESSAGE -->
+      <!-- 1.4 MARK MESSAGES DELIVERED -->
+      <article class="endpoint-card" id="chat-mark-message-delivered">
+        <div class="endpoint-header">
+          <div class="endpoint-title">
+            <span class="badge badge-emit">EMIT</span>
+            <h3>chat.mark_message_delivered</h3>
+          </div>
+        </div>
+        <div class="endpoint-body">
+          <p style="color: var(--text-muted);">Notifica que uno o más mensajes han sido entregados exitosamente al
+            dispositivo receptor. Se incluye <code>target_user_id</code> para propagar la actualización de estado al
+            remitente original.</p>
+          <div class="payload-grid">
+            <div class="code-block">
+              <div class="code-header"><span>1. Emisión del Cliente
+                  (MarkMessagesDeliveredRequest)</span><span>JSON</span></div>
+              <pre><code>{
+  "chat_id": "6a022c0a50bf64cf1674e287",
+  "user_id": "6727ea0d6f4b3358a701dd7d",
+  "message_ids": [
+    "67a1b2c3d4e5f67890123457"
+  ],
+  "device_id": "dev_mobile_01",
+  "target_user_id": "672800e46f4b3358a701fa9c"
+}</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-header"><span>2. Respuesta del Servidor (socket.on("response"))</span><span>JSON</span>
+              </div>
+              <pre><code>{
+  "type": "response",
+  "payload": {
+    "success": true,
+    "message": "Mensajes marcados como entregados",
+    "updated_count": 1,
+    "message_ids": [
+      "67a1b2c3d4e5f67890123457"
+    ]
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 1.5 MARK MESSAGES READ -->
+      <article class="endpoint-card" id="chat-mark-message-read">
+        <div class="endpoint-header">
+          <div class="endpoint-title">
+            <span class="badge badge-emit">EMIT</span>
+            <h3>chat.mark_message_read</h3>
+          </div>
+        </div>
+        <div class="endpoint-body">
+          <p style="color: var(--text-muted);">Notifica que uno o más mensajes han sido leídos por el receptor. Se
+            incluye <code>target_user_id</code> para propagar la actualización de estado al remitente original.</p>
+          <div class="payload-grid">
+            <div class="code-block">
+              <div class="code-header"><span>1. Emisión del Cliente (MarkMessagesReadRequest)</span><span>JSON</span>
+              </div>
+              <pre><code>{
+  "chat_id": "6a022c0a50bf64cf1674e287",
+  "user_id": "6727ea0d6f4b3358a701dd7d",
+  "message_ids": [
+    "67a1b2c3d4e5f67890123457"
+  ],
+  "target_user_id": "672800e46f4b3358a701fa9c"
+}</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-header"><span>2. Respuesta del Servidor (socket.on("response"))</span><span>JSON</span>
+              </div>
+              <pre><code>{
+  "type": "response",
+  "payload": {
+    "success": true,
+    "message": "Mensajes marcados como leídos",
+    "updated_count": 1,
+    "message_ids": [
+      "67a1b2c3d4e5f67890123457"
+    ]
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 1.6 EDIT MESSAGE -->
       <article class="endpoint-card" id="chat-edit-message">
         <div class="endpoint-header">
           <div class="endpoint-title">
@@ -698,7 +817,8 @@
               <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span></div>
               <pre><code>{
   "message_id": "6a6145b055502227402bc597",
-  "new_message": "Hola, este es un mensaje de prueba-Actualiza2"
+  "new_message": "Hola, este es un mensaje de prueba-Actualiza2",
+  "target_user_id": "6727ea0d6f4b3358a701dd7d"
 }</code></pre>
             </div>
             <div class="code-block">
@@ -717,9 +837,9 @@
       "avatar": "https://storage.googleapis.com/media-temp.cuboconecta.com/avatars/1778611747_media.jpg"
     },
     "message_type": "TEXT",
-    "message": "",
-    "ciphertext": "Hola, este es un mensaje de prueba-Actualiza2",
-    "source": "*****",
+    "message": "Hola, este es un mensaje de prueba-Actualiza2",
+    "ciphertext": "",
+    "source": "",
     "created_at": {
       "seconds": "1784759728",
       "nanos": 42000000
@@ -743,7 +863,8 @@
       "sender_profile_id": "672800e46f4b3358a701fa9d",
       "sender_name": "Tú",
       "text": "Hola buen dia"
-    }
+    },
+    "status": "SENT"
   }
 }</code></pre>
             </div>
@@ -751,7 +872,7 @@
         </div>
       </article>
 
-      <!-- 1.5 DELETE MESSAGES -->
+      <!-- 1.7 DELETE MESSAGES -->
       <article class="endpoint-card" id="chat-delete-messages">
         <div class="endpoint-header">
           <div class="endpoint-title">
@@ -781,6 +902,7 @@
               <pre><code>{
   "chat_id": "6a022c0a50bf64cf1674e287",
   "user_id": "672800e46f4b3358a701fa9c",
+  "target_user_id": "6727ea0d6f4b3358a701dd7d",
   "message_ids": [
     "67a1b2c3d4e5f67890123457",
     "67a1b2c3d4e5f67890123458"
@@ -807,7 +929,7 @@
         </div>
       </article>
 
-      <!-- 1.6 DELETE CHATS -->
+      <!-- 1.8 DELETE CHATS -->
       <article class="endpoint-card" id="chat-delete-chats">
         <div class="endpoint-header">
           <div class="endpoint-title">
@@ -849,7 +971,7 @@
         </div>
       </article>
 
-      <!-- 1.7 TYPING ACTIONS -->
+      <!-- 1.9 TYPING ACTIONS -->
       <article class="endpoint-card" id="chat-typing-action">
         <div class="endpoint-header">
           <div class="endpoint-title">
@@ -858,7 +980,7 @@
           </div>
         </div>
         <div class="endpoint-body">
-          <p style="color: var(--text-muted);">Notifica el estado de escritura del usuario. Requiere
+          <p style="color: var(--text-muted);">Notifica el estado de escritura del usuario hacia el
             <code>target_user_id</code>.
           </p>
           <div class="code-block" style="margin-top: 1rem;">
@@ -886,71 +1008,101 @@
           </div>
         </div>
         <div class="endpoint-body">
-          <p style="color: var(--text-muted);">Evento pasivo transmitido por el backend (vía
-            <code>SendToRoomEvent</code> y <code>SendToUserEvent</code>) cuando se procesa un mensaje. Lo escuchan los
-            destinatarios y otros dispositivos del emisor.
+          <p style="color: var(--text-muted);">Evento pasivo retransmitido por el backend al <code>target_user_id</code>
+            especificado cuando se procesa, edita o elimina un mensaje.
           </p>
           <div class="code-block" style="margin-top: 1rem;">
             <div class="code-header"><span>Payload Recibido (socket.on("chat.message",
                 callback))</span><span>JSON</span></div>
             <pre><code>{
-  "id": "67a1b2c3d4e5f67890123457",
-  "chat_id": "6a022c0a50bf64cf1674e287",
-  "temp_id": "aTHiJM93SriZUjZ0EOzx9",
-  "sender": {
-    "user_id": "672800e46f4b3358a701fa9c",
-    "profile_id": "672800e46f4b3358a701fa9d",
-    "name": "Carlos Santana",
-    "avatar": "https://storage.googleapis.com/media-temp.cuboconecta.com/avatars/avatar.jpg"
-  },
-  "message_type": "TEXT",
-  "message": "Hola, ¿cómo estás?",
-  "ciphertext": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "source": "",
-  "created_at": "2026-07-22T20:15:00.000Z",
-  "updated_at": "",
-  "response_msg_id": "6a74cc9eb4d074f7ceb342c4",
-  "deleted_by": null,
-  "keys": [
-    {
-      "device_id": "dev_mobile_01",
-      "encrypted_key": "enc_key_xyz..."
-    }
-  ],
-  "nonce": "nonce_val_999",
-  "sender_device_id": "uuid-temp-mobile-12345",
-  "reply_to": {
-    "id": "6a74cc9eb4d074f7ceb342c4",
-    "sender_profile_id": "672800e46f4b3358a701fa9d",
-    "sender_name": "Tú",
-    "text": "Hola buen dia"
+  "type": "response",
+  "payload": {
+    "id": "67a1b2c3d4e5f67890123457",
+    "chat_id": "6a022c0a50bf64cf1674e287",
+    "temp_id": "aTHiJM93SriZUjZ0EOzx9",
+    "sender": {
+      "user_id": "672800e46f4b3358a701fa9c",
+      "profile_id": "672800e46f4b3358a701fa9d",
+      "name": "Carlos Santana",
+      "avatar": "https://storage.googleapis.com/media-temp.cuboconecta.com/avatars/avatar.jpg"
+    },
+    "message_type": "TEXT",
+    "message": "Hola, ¿cómo estás?",
+    "ciphertext": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source": "",
+    "created_at": "2026-07-22T20:15:00.000Z",
+    "updated_at": "",
+    "response_msg_id": "6a74cc9eb4d074f7ceb342c4",
+    "deleted_by": null,
+    "keys": [
+      {
+        "device_id": "dev_mobile_01",
+        "encrypted_key": "enc_key_xyz..."
+      }
+    ],
+    "nonce": "nonce_val_999",
+    "sender_device_id": "uuid-temp-mobile-12345",
+    "reply_to": {
+      "id": "6a74cc9eb4d074f7ceb342c4",
+      "sender_profile_id": "672800e46f4b3358a701fa9d",
+      "sender_name": "Tú",
+      "text": "Hola buen dia"
+    },
+    "status": "SENT"
   }
 }</code></pre>
           </div>
         </div>
       </article>
 
-      <!-- 2.2 STREAM TYPING STATUS -->
+      <!-- 2.2 STREAM MESSAGE STATUS -->
+      <article class="endpoint-card" id="stream-message-status">
+        <div class="endpoint-header">
+          <div class="endpoint-title">
+            <span class="badge badge-stream">LISTEN</span>
+            <h3>Evento: chat.message_status</h3>
+          </div>
+        </div>
+        <div class="endpoint-body">
+          <p style="color: var(--text-muted);">Evento pasivo retransmitted hacia el <code>target_user_id</code>
+            (remitente original) notificando la confirmación de entrega o lectura de sus mensajes.</p>
+          <div class="code-block" style="margin-top: 1rem;">
+            <div class="code-header"><span>Payload Recibido (socket.on("chat.message_status",
+                callback))</span><span>JSON</span></div>
+            <pre><code>{
+  "type": "response",
+  "payload": {
+    "success": true,
+    "message": "Mensajes marcados como leídos",
+    "updated_count": 1,
+    "message_ids": [
+      "67a1b2c3d4e5f67890123457"
+    ]
+  }
+}</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2.3 STREAM TYPING STATUS -->
       <article class="endpoint-card" id="stream-typing-status">
         <div class="endpoint-header">
           <div class="endpoint-title">
             <span class="badge badge-stream">LISTEN</span>
-            <h3>Evento: chat.typing_status</h3>
+            <h3>Evento: chat.typing_status / chat.typing_sender</h3>
           </div>
         </div>
         <div class="endpoint-body">
-          <p style="color: var(--text-muted);">Evento pasivo retransmitted por el servidor únicamente al
-            <code>target_user_id</code>.
+          <p style="color: var(--text-muted);">Eventos pasivos retransmitidos por el servidor únicamente al destinatario
+            del chat (<code>target_user_id</code>) notificando que alguien está o dejó de escribir.
           </p>
           <div class="code-block" style="margin-top: 1rem;">
             <div class="code-header"><span>Payload Recibido (socket.on("chat.typing_status",
                 callback))</span><span>JSON</span></div>
             <pre><code>{
-  "type": "chat.start_typing",
+  "type": "response",
   "payload": {
-    "chat_id": "6a022c0a50bf64cf1674e287",
-    "user_id": "6727ea0d6f4b3358a701dd7d",
-    "target_user_id": "672800e46f4b3358a701fa9c"
+    "status": true
   }
 }</code></pre>
           </div>
