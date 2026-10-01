@@ -440,16 +440,20 @@
             <tr>
               <td><code>chat.mark_message_delivered</code></td>
               <td>Evento <code>"response"</code> (<code>MarkMessagesResponse</code>) + Evento
-                <code>"chat.message_status"</code></td>
+                <code>"chat.message_status"</code>
+              </td>
               <td>Receptor confirma entrega (ACK); Remitente original (<code>target_user_id</code>) recibe cambio a
-                <code>DELIVERED</code></td>
+                <code>DELIVERED</code>
+              </td>
             </tr>
             <tr>
               <td><code>chat.mark_message_read</code></td>
               <td>Evento <code>"response"</code> (<code>MarkMessagesResponse</code>) + Evento
-                <code>"chat.message_status"</code></td>
+                <code>"chat.message_status"</code>
+              </td>
               <td>Receptor confirma lectura (ACK); Remitente original (<code>target_user_id</code>) recibe cambio a
-                <code>READ</code></td>
+                <code>READ</code>
+              </td>
             </tr>
             <tr>
               <td><code>chat.edit_message</code></td>
@@ -460,7 +464,8 @@
             <tr>
               <td><code>chat.delete_messages</code></td>
               <td>Evento <code>"response"</code> (<code>DeleteMessagesResponse</code>) + Evento
-                <code>"chat.message"</code></td>
+                <code>"chat.message"</code>
+              </td>
               <td>Cliente Emisor y Destinatario (si <code>delete_for_everyone</code>)</td>
             </tr>
             <tr>
@@ -1077,7 +1082,15 @@
     "updated_count": 1,
     "message_ids": [
       "67a1b2c3d4e5f67890123457"
-    ]
+    ],
+    "last_message": {
+          "message_id": "67a1b2c3d4e5f67890123456",
+          "message_type": "TEXT",
+          "content": "Esta es una prueba",
+          "sender_id": "672800e46f4b3358a701fa9c",
+          "created_at": "2026-07-22T20:14:37.218Z",
+          "status": "READ"
+        },
   }
 }</code></pre>
           </div>
