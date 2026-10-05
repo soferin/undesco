@@ -4,1185 +4,172 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>API Reference | Chat & WebSockets Service</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-    rel="stylesheet">
+  <title>Cubo Conecta - Documentación de Microservicios</title>
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     :root {
-      --bg-main: #0b0f17;
-      --bg-sidebar: #111827;
+      --bg-main: #0f172a;
       --bg-card: #1e293b;
-      --bg-code: #0d1117;
-      --border-color: rgba(255, 255, 255, 0.08);
-
-      --text-main: #f1f5f9;
+      --border-color: #334155;
+      --text-main: #f8fafc;
       --text-muted: #94a3b8;
-      --text-dim: #64748b;
-
-      --accent-primary: #38bdf8;
-      --accent-success: #10b981;
-      --accent-warning: #f59e0b;
-      --accent-purple: #818cf8;
-      --accent-danger: #f43f5e;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+      --accent-color: #38bdf8;
+      --code-bg: #090d16;
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background-color: var(--bg-main);
       color: var(--text-main);
-      line-height: 1.5;
-      display: flex;
       min-height: 100vh;
     }
 
-    /* --- SIDEBAR --- */
+    /* Sidebar personalizado para escritorio */
     .sidebar {
-      width: 280px;
-      background-color: var(--bg-sidebar);
+      background-color: var(--bg-card);
       border-right: 1px solid var(--border-color);
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      overflow-y: auto;
-      padding: 1.5rem 1rem;
+      min-height: 100vh;
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 2rem;
-      padding-left: 0.5rem;
+    /* Tarjetas de Servicios */
+    .service-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      transition: transform 0.2s, border-color 0.2s;
+      height: 100%;
     }
 
-    .brand-logo {
-      width: 28px;
-      height: 28px;
-      background: linear-gradient(135deg, var(--accent-primary), var(--accent-purple));
-      border-radius: 6px;
+    .service-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent-color);
     }
 
-    .brand-title {
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: #fff;
-      letter-spacing: -0.02em;
-    }
-
-    .nav-group {
-      margin-bottom: 1.5rem;
-    }
-
-    .nav-title {
+    .badge-service {
+      background-color: rgba(56, 189, 248, 0.15);
+      color: var(--accent-color);
       font-size: 0.75rem;
-      text-transform: uppercase;
-      font-weight: 700;
-      color: var(--text-dim);
-      letter-spacing: 0.05em;
-      margin-bottom: 0.5rem;
-      padding-left: 0.5rem;
+      font-weight: 600;
     }
 
-    .nav-list {
-      list-style: none;
-    }
-
-    .nav-item a {
-      display: block;
-      padding: 0.4rem 0.6rem;
+    /* Estilos de navegación lateral */
+    .nav-link {
       color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.875rem;
       border-radius: 6px;
-      transition: all 0.15s ease;
+      font-size: 0.9rem;
+      transition: background 0.2s, color 0.2s;
     }
 
-    .nav-item a:hover {
+    .nav-link:hover,
+    .nav-link.active {
       background-color: rgba(255, 255, 255, 0.05);
-      color: var(--text-main);
+      color: var(--text-main) !important;
     }
 
-    /* --- MAIN CONTENT --- */
-    .main-wrapper {
-      margin-left: 280px;
-      flex: 1;
-      padding: 2.5rem 3rem;
-      max-width: 1200px;
-    }
-
-    .header {
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 1.5rem;
-      margin-bottom: 2.5rem;
-    }
-
-    .header h1 {
-      font-size: 2.25rem;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      margin-bottom: 0.5rem;
-    }
-
-    .header p {
-      color: var(--text-muted);
-      font-size: 1rem;
-    }
-
-    .tech-stack {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 1rem;
-    }
-
-    .tech-pill {
-      font-size: 0.75rem;
-      background: rgba(56, 189, 248, 0.1);
-      color: var(--accent-primary);
-      border: 1px solid rgba(56, 189, 248, 0.2);
-      padding: 0.2rem 0.6rem;
-      border-radius: 9999px;
+    .service-link {
+      color: var(--accent-color);
+      text-decoration: none;
+      font-size: 0.9rem;
       font-weight: 500;
     }
 
-    /* --- SECTION STYLES --- */
-    section {
-      margin-bottom: 4rem;
-    }
-
-    h2 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      margin-bottom: 1rem;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    /* --- ARCHITECTURE TABLE --- */
-    .table-container {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      overflow: hidden;
-      margin-bottom: 2.5rem;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-      font-size: 0.875rem;
-    }
-
-    th {
-      background-color: rgba(0, 0, 0, 0.2);
-      padding: 0.875rem 1rem;
-      color: var(--text-muted);
-      font-weight: 600;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    td {
-      padding: 0.875rem 1rem;
-      border-bottom: 1px solid var(--border-color);
-      color: var(--text-main);
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    /* --- ENDPOINT CARDS --- */
-    .endpoint-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      margin-bottom: 2rem;
-      overflow: hidden;
-    }
-
-    .endpoint-header {
-      padding: 1.25rem 1.5rem;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(255, 255, 255, 0.01);
-    }
-
-    .endpoint-title {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .endpoint-title h3 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      font-family: 'JetBrains Mono', monospace;
-      color: #fff;
-    }
-
-    .endpoint-body {
-      padding: 1.5rem;
-    }
-
-    /* --- BADGES --- */
-    .badge {
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-      letter-spacing: 0.05em;
-    }
-
-    .badge-emit {
-      background: rgba(56, 189, 248, 0.15);
-      color: var(--accent-primary);
-      border: 1px solid rgba(56, 189, 248, 0.3);
-    }
-
-    .badge-stream {
-      background: rgba(245, 158, 11, 0.15);
-      color: var(--accent-warning);
-      border: 1px solid rgba(245, 158, 11, 0.3);
-    }
-
-    .badge-presence {
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--accent-success);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-
-    /* --- CALLOUT NOTICES --- */
-    .callout {
-      padding: 1rem;
-      border-radius: 8px;
-      margin: 1rem 0;
-      font-size: 0.875rem;
-      display: flex;
-      gap: 0.75rem;
-      align-items: flex-start;
-    }
-
-    .callout-warning {
-      background: rgba(245, 158, 11, 0.08);
-      border: 1px solid rgba(245, 158, 11, 0.25);
-      color: #fde68a;
-    }
-
-    .callout-icon {
-      font-size: 1.1rem;
-      line-height: 1;
-    }
-
-    /* --- CODE BLOCKS & GRID --- */
-    .payload-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    @media (max-width: 1024px) {
-      .payload-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .code-block {
-      background: var(--bg-code);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .code-header {
-      background: rgba(255, 255, 255, 0.03);
-      padding: 0.5rem 0.875rem;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    pre {
-      padding: 1rem;
-      overflow-x: auto;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.825rem;
-      color: #e2e8f0;
-      line-height: 1.6;
-    }
-
-    code {
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    p code,
-    td code {
-      background: rgba(255, 255, 255, 0.08);
-      padding: 0.15rem 0.4rem;
-      border-radius: 4px;
-      font-size: 0.85em;
-      color: var(--accent-primary);
+    .service-link:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- SIDEBAR NAVIGATION -->
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="brand-logo"></div>
-      <span class="brand-title">Chat & WS API</span>
+  <div class="container-fluid">
+    <div class="row">
+
+      <!-- SIDEBAR RESPONSIVO -->
+      <nav class="col-md-3 col-lg-2 d-md-block sidebar p-3 collapse" id="sidebarMenu">
+        <div class="position-sticky pt-3">
+          <h2 class="h6 text-uppercase text-muted fw-bold mb-3">Cubo Conecta</h2>
+
+          <div class="mb-3">
+            <span class="d-block text-uppercase mb-2"
+              style="font-size: 0.75rem; letter-spacing: 0.05em; color: var(--text-muted);">Microservicios</span>
+            <ul class="nav flex-column gap-1">
+              <li class="nav-item"><a class="nav-link py-1 px-2 active" href="index.html">🏠 Inicio</a></li>
+              <li class="nav-item"><a class="nav-link py-1 px-2" href="search.service.html">🔍 Search Service</a></li>
+              <li class="nav-item"><a class="nav-link py-1 px-2" href="chat.service.html">💬 Chat & WS Service</a></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- MAIN CONTENT -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+
+        <!-- Botón para desplegar menú en dispositivos móviles -->
+        <div class="d-md-none mb-4">
+          <button class="btn btn-outline-light btn-sm" type="button" data-bs-toggle="collapse"
+            data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
+            aria-label="Toggle navigation">
+            ☰ Menú de Navegación
+          </button>
+        </div>
+
+        <header class="mb-5">
+          <h1 class="h2 fw-bold text-white">Portal de Arquitectura gRPC / API Gateway</h1>
+          <p class="text-secondary lead fs-6">Documentación centralizada del ecosistema backend de Cubo Conecta.
+            Selecciona un microservicio para ver sus contratos y rutas expuestas.</p>
+        </header>
+
+        <!-- GRID DE SERVICIOS -->
+        <section>
+          <h2 class="h5 text-info border-bottom pb-2 mb-4">SERVICIOS DISPONIBLES</h2>
+
+          <div class="row g-4">
+
+            <!-- Search Service Card -->
+            <div class="col-md-6 col-xl-4">
+              <div class="service-card p-4 d-flex flex-column justify-content-between">
+                <div>
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="badge badge-service">v1.0.0</span>
+                    <span class="text-secondary small font-monospace">gRPC / Gin</span>
+                  </div>
+                  <h3 class="h5 text-white mb-2">Search Service</h3>
+                  <p class="text-secondary small mb-4">Indexación y búsqueda de usuarios, chats, publicaciones y
+                    comentarios integrados con el API Gateway.</p>
+                </div>
+                <div>
+                  <a href="search.service.html" class="service-link">&rarr; Ver Documentación</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chat Service Card -->
+            <div class="col-md-6 col-xl-4">
+              <div class="service-card p-4 d-flex flex-column justify-content-between">
+                <div>
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="badge badge-service">v2.0.0</span>
+                    <span class="text-secondary small font-monospace">Go / WebSockets</span>
+                  </div>
+                  <h3 class="h5 text-white mb-2">Chat & WebSockets Service</h3>
+                  <p class="text-secondary small mb-4">Gestión de mensajería en tiempo real, eventos de presencia,
+                    estados de entrega/lectura y streams de chat.</p>
+                </div>
+                <div>
+                  <a href="chat.service.html" class="service-link">&rarr; Ver Documentación</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </main>
     </div>
+  </div>
 
-    <div class="nav-group">
-      <div class="nav-title">General</div>
-      <ul class="nav-list">
-        <li class="nav-item"><a href="#resumen">Arquitectura</a></li>
-      </ul>
-    </div>
-
-    <div class="nav-group">
-      <div class="nav-title">Acciones (Command/Response)</div>
-      <ul class="nav-list">
-        <li class="nav-item"><a href="#chat-get-chat-list">chat.get_chat_list</a></li>
-        <li class="nav-item"><a href="#chat-get-chat-messages">chat.get_chat_messages</a></li>
-        <li class="nav-item"><a href="#chat-send-message">chat.send_message</a></li>
-        <li class="nav-item"><a href="#chat-mark-message-delivered">chat.mark_message_delivered</a></li>
-        <li class="nav-item"><a href="#chat-mark-message-read">chat.mark_message_read</a></li>
-        <li class="nav-item"><a href="#chat-edit-message">chat.edit_message</a></li>
-        <li class="nav-item"><a href="#chat-delete-messages">chat.delete_messages</a></li>
-        <li class="nav-item"><a href="#chat-delete-chats">chat.delete_chats</a></li>
-        <li class="nav-item"><a href="#chat-typing-action">chat.start / stop_typing</a></li>
-      </ul>
-    </div>
-
-    <div class="nav-group">
-      <div class="nav-title">Streams en Tiempo Real</div>
-      <ul class="nav-list">
-        <li class="nav-item"><a href="#stream-chat-message">chat.message</a></li>
-        <li class="nav-item"><a href="#stream-message-status">chat.message_status</a></li>
-        <li class="nav-item"><a href="#stream-typing-status">chat.typing_status</a></li>
-      </ul>
-    </div>
-
-    <div class="nav-group">
-      <div class="nav-title">Eventos de Presencia</div>
-      <ul class="nav-list">
-        <li class="nav-item"><a href="#presence-snapshot">presence.snapshot</a></li>
-        <li class="nav-item"><a href="#presence-watch">presence.watch</a></li>
-      </ul>
-    </div>
-  </aside>
-
-  <!-- MAIN CONTENT AREA -->
-  <main class="main-wrapper">
-
-    <!-- HEADER -->
-    <header class="header">
-      <h1>Especificación WebSocket Chat API</h1>
-      <p>Documentación técnica de eventos, comandos y respuestas en tiempo real.</p>
-      <div class="tech-stack">
-        <span class="tech-pill">Go Backend</span>
-        <span class="tech-pill">Socket.IO / WebSockets</span>
-        <span class="tech-pill">v2.0 Consolidada</span>
-      </div>
-    </header>
-
-    <!-- ARCHITECTURE SUMMARY -->
-    <section id="resumen">
-      <h2>Resumen de Arquitectura de Eventos</h2>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Acción Emitida (Cliente)</th>
-              <th>Mecanismo / Evento de Respuesta</th>
-              <th>Alcance / Receptor</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>chat.get_chat_list</code></td>
-              <td>Evento <code>"response"</code> (<code>GetChatListResponse</code>)</td>
-              <td>Cliente Emisor (Solicitante)</td>
-            </tr>
-            <tr>
-              <td><code>chat.get_chat_messages</code></td>
-              <td>Evento <code>"response"</code> (<code>GetChatMessagesResponse</code>)</td>
-              <td>Cliente Emisor (Solicitante)</td>
-            </tr>
-            <tr>
-              <td><code>chat.send_message</code></td>
-              <td>Evento <code>"response"</code> (ACK) + Evento <code>"chat.message"</code></td>
-              <td>Emisor (ACK) y Destinatario (<code>target_user_id</code>)</td>
-            </tr>
-            <tr>
-              <td><code>chat.mark_message_delivered</code></td>
-              <td>Evento <code>"response"</code> (<code>MarkMessagesResponse</code>) + Evento
-                <code>"chat.message_status"</code>
-              </td>
-              <td>Receptor confirma entrega (ACK); Remitente original (<code>target_user_id</code>) recibe cambio a
-                <code>DELIVERED</code>
-              </td>
-            </tr>
-            <tr>
-              <td><code>chat.mark_message_read</code></td>
-              <td>Evento <code>"response"</code> (<code>MarkMessagesResponse</code>) + Evento
-                <code>"chat.message_status"</code>
-              </td>
-              <td>Receptor confirma lectura (ACK); Remitente original (<code>target_user_id</code>) recibe cambio a
-                <code>READ</code>
-              </td>
-            </tr>
-            <tr>
-              <td><code>chat.edit_message</code></td>
-              <td>Evento <code>"response"</code> (<code>ChatMessageResponse</code>) + Evento <code>"chat.message"</code>
-              </td>
-              <td>Cliente Emisor y Destinatario (<code>target_user_id</code>)</td>
-            </tr>
-            <tr>
-              <td><code>chat.delete_messages</code></td>
-              <td>Evento <code>"response"</code> (<code>DeleteMessagesResponse</code>) + Evento
-                <code>"chat.message"</code>
-              </td>
-              <td>Cliente Emisor y Destinatario (si <code>delete_for_everyone</code>)</td>
-            </tr>
-            <tr>
-              <td><code>chat.delete_chats</code></td>
-              <td>Evento <code>"response"</code> (<code>DeleteChatsResponse</code>)</td>
-              <td>Cliente Emisor (Solicitante)</td>
-            </tr>
-            <tr>
-              <td><code>chat.start_typing</code> / <code>chat.stop_typing</code></td>
-              <td>Evento <code>"response"</code> (<code>ChatResponse</code>) + Evento <code>"chat.typing_status"</code>
-              </td>
-              <td>Cliente Emisor (ACK) y únicamente al <code>target_user_id</code></td>
-            </tr>
-            <tr>
-              <td><code>presence.snapshot</code></td>
-              <td>Evento <code>"presence.snapshot"</code></td>
-              <td>Cliente Solicitante</td>
-            </tr>
-            <tr>
-              <td><code>presence.watch</code></td>
-              <td>Suscripción pasiva (Eventos <code>"presence.update"</code>)</td>
-              <td>Cliente Solicitante</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- SECTION 1: PETICIONES Y RESPUESTAS -->
-    <section id="peticiones">
-      <h2>1. PETICIONES Y RESPUESTAS (EVENTO "response")</h2>
-      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
-        Estas acciones se envían mediante <code>socket.emit(evento, data)</code> y el servidor devuelve su resultado
-        emitiendo el evento global <code>socket.on("response", ...)</code>.
-      </p>
-
-      <!-- 1.1 GET CHAT LIST -->
-      <article class="endpoint-card" id="chat-get-chat-list">
-        <div class="endpoint-header">
-          <div class="endpoint-title">
-            <span class="badge badge-emit">EMIT</span>
-            <h3>chat.get_chat_list</h3>
-          </div>
-        </div>
-        <div class="endpoint-body">
-          <p style="color: var(--text-muted);">Obtiene la lista resumida de conversaciones activas del usuario.</p>
-          <div class="payload-grid">
-            <div class="code-block">
-              <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span></div>
-              <pre><code>{
-  "user_id": "672800e46f4b3358a701fa9c",
-  "before_chat_id": "",
-  "limit": 10
-}</code></pre>
-            </div>
-            <div class="code-block">
-              <div class="code-header"><span>2. Respuesta del Servidor (socket.on("response"))</span><span>JSON</span>
-              </div>
-              <pre><code>{
-  "type": "response",
-  "payload": {
-    "chats": [
-      {
-        "chat_id": "6a022c0a50bf64cf1674e287",
-        "contact": {
-          "profile_id": "672800e46f4b3358a701fa9d",
-          "user_id": "672800e46f4b3358a701fa9c",
-          "avatar": "https://storage.googleapis.com/media-temp.cuboconecta.com/avatars/1778611747_media.jpg",
-          "name": "Carlos Santana"
-        },
-        "last_message": {
-          "message_id": "67a1b2c3d4e5f67890123456",
-          "message_type": "TEXT",
-          "content": "Esta es una prueba",
-          "sender_id": "672800e46f4b3358a701fa9c",
-          "created_at": "2026-07-22T20:14:37.218Z",
-          "status": "READ"
-        },
-        "last_seen_at": "2026-07-22T20:14:37.218Z"
-      }
-    ],
-    "has_more": false
-  }
-}</code></pre>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <!-- 1.2 GET CHAT MESSAGES -->
-      <article class="endpoint-card" id="chat-get-chat-messages">
-        <div class="endpoint-header">
-          <div class="endpoint-title">
-            <span class="badge badge-emit">EMIT</span>
-            <h3>chat.get_chat_messages</h3>
-          </div>
-        </div>
-        <div class="endpoint-body">
-          <p style="color: var(--text-muted);">Obtiene el historial detallado de mensajes de una conversación
-            específica.</p>
-          <div class="payload-grid">
-            <div class="code-block">
-              <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span></div>
-              <pre><code>{
-  "chat_id": "6a022c0a50bf64cf1674e287",
-  "user_id": "672800e46f4b3358a701fa9c",
-  "before_message_id": "",
-  "limit": 20
-}</code></pre>
-            </div>
-            <div class="code-block">
-              <div class="code-header"><span>2. Respuesta del Servidor (socket.on("response"))</span><span>JSON</span>
-              </div>
-              <pre><code>{
-  "type": "response",
-  "payload": {
-    "messages": [
-      {
-        "id": "67a1b2c3d4e5f67890123456",
-        "chat_id": "6a022c0a50bf64cf1674e287",
-        "temp_id": "aTHiJM93SriZUjZ0EOzx9",
-        "sender": {
-          "user_id": "672800e46f4b3358a701fa9c",
-          "profile_id": "672800e46f4b3358a701fa9d",
-          "name": "Carlos Santana",
-          "avatar": "https://storage.googleapis.com/media-temp.cuboconecta.com/avatars/avatar.jpg"
-        },
-        "message_type": "TEXT",
-        "message": "Esta es una prueba",
-        "ciphertext": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "source": "",
-        "created_at": "2026-07-22T20:14:37.218Z",
-        "updated_at": "",
-        "response_msg_id": "6a74cc9eb4d074f7ceb342c4",
-        "deleted_by": null,
-        "keys": [
-          {
-            "device_id": "dev_01",
-            "encrypted_key": "enc_key_abc..."
-          }
-        ],
-        "nonce": "nonce_val_999",
-        "sender_device_id": "uuid-temp-mobile-12345",
-        "reply_to": {
-          "id": "6a74cc9eb4d074f7ceb342c4",
-          "sender_profile_id": "672800e46f4b3358a701fa9d",
-          "sender_name": "Tú",
-          "text": "Hola buen dia"
-        },
-        "status": "READ"
-      }
-    ],
-    "has_more": false
-  }
-}</code></pre>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <!-- 1.3 SEND MESSAGE -->
-      <article class="endpoint-card" id="chat-send-message">
-        <div class="endpoint-header">
-          <div class="endpoint-title">
-            <span class="badge badge-emit">EMIT</span>
-            <h3>chat.send_message</h3>
-          </div>
-        </div>
-        <div class="endpoint-body">
-          <p style="color: var(--text-muted);">Envía un nuevo mensaje. El emisor recibe la confirmación formal por
-            <code>"response"</code>, y si se envía <code>target_user_id</code> se retransmite directamente al
-            destinatario mediante <code>"chat.message"</code>.
-          </p>
-          <div class="payload-grid">
-            <div class="code-block">
-              <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span></div>
-              <pre><code>{
-  "chat_id": "6a022c0a50bf64cf1674e287",
-  "user_id": "672800e46f4b3358a701fa9c",
-  "target_user_id": "6727ea0d6f4b3358a701dd7d",
-  "message_type": "TEXT",
-  "message": "Hola, ¿cómo estás?",
-  "source": "",
-  "response_msg_id": "6a74cc9eb4d074f7ceb342c4",
-  "keys": [
-    {
-      "device_id": "dev_mobile_01",
-      "encrypted_key": "enc_key_xyz..."
-    }
-  ],
-  "nonce": "nonce_val_999",
-  "sender_device_id": "uuid-temp-mobile-12345",
-  "temp_id": "aTHiJM93SriZUjZ0EOzx9",
-  "status": "SENT"
-}</code></pre>
-            </div>
-            <div class="code-block">
-              <div class="code-header"><span>2. Respuesta al Emisor (socket.on("response"))</span><span>JSON</span>
-              </div>
-              <pre><code>{
-  "type": "response",
-  "payload": {
-    "id": "67a1b2c3d4e5f67890123457",
-    "chat_id": "6a022c0a50bf64cf1674e287",
-    "temp_id": "aTHiJM93SriZUjZ0EOzx9",
-    "sender": {
-      "user_id": "672800e46f4b3358a701fa9c",
-      "profile_id": "672800e46f4b3358a701fa9d",
-      "name": "Carlos Santana",
-      "avatar": "https://storage.googleapis.com/media-temp.cuboconecta.com/avatars/avatar.jpg"
-    },
-    "message_type": "TEXT",
-    "message": "Hola, ¿cómo estás?",
-    "ciphertext": "",
-    "source": "",
-    "created_at": "2026-07-22T20:15:00.000Z",
-    "updated_at": "",
-    "response_msg_id": "6a74cc9eb4d074f7ceb342c4",
-    "deleted_by": null,
-    "keys": [
-      {
-        "device_id": "dev_mobile_01",
-        "encrypted_key": "enc_key_xyz..."
-      }
-    ],
-    "nonce": "nonce_val_999",
-    "sender_device_id": "uuid-temp-mobile-12345",
-    "reply_to": {
-      "id": "6a74cc9eb4d074f7ceb342c4",
-      "sender_profile_id": "672800e46f4b3358a701fa9d",
-      "sender_name": "Tú",
-      "text": "Hola buen dia"
-    },
-    "status": "SENT"
-  }
-}</code></pre>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <!-- 1.4 MARK MESSAGES DELIVERED -->
-      <article class="endpoint-card" id="chat-mark-message-delivered">
-        <div class="endpoint-header">
-          <div class="endpoint-title">
-            <span class="badge badge-emit">EMIT</span>
-            <h3>chat.mark_message_delivered</h3>
-          </div>
-        </div>
-        <div class="endpoint-body">
-          <p style="color: var(--text-muted);">Notifica que uno o más mensajes han sido entregados exitosamente al
-            dispositivo receptor. Se incluye <code>target_user_id</code> para propagar la actualización de estado al
-            remitente original.</p>
-          <div class="payload-grid">
-            <div class="code-block">
-              <div class="code-header"><span>1. Emisión del Cliente
-                  (MarkMessagesDeliveredRequest)</span><span>JSON</span></div>
-              <pre><code>{
-  "chat_id": "6a022c0a50bf64cf1674e287",
-  "user_id": "6727ea0d6f4b3358a701dd7d",
-  "message_ids": [
-    "67a1b2c3d4e5f67890123457"
-  ],
-  "device_id": "dev_mobile_01",
-  "target_user_id": "672800e46f4b3358a701fa9c"
-}</code></pre>
-            </div>
-            <div class="code-block">
-              <div class="code-header"><span>2. Respuesta del Servidor (socket.on("response"))</span><span>JSON</span>
-              </div>
-              <pre><code>{
-  "type": "response",
-  "payload": {
-    "success": true,
-    "message": "Mensajes marcados como entregados",
-    "updated_count": 1,
-    "message_ids": [
-      "67a1b2c3d4e5f67890123457"
-    ]
-  }
-}</code></pre>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <!-- 1.5 MARK MESSAGES READ -->
-      <article class="endpoint-card" id="chat-mark-message-read">
-        <div class="endpoint-header">
-          <div class="endpoint-title">
-            <span class="badge badge-emit">EMIT</span>
-            <h3>chat.mark_message_read</h3>
-          </div>
-        </div>
-        <div class="endpoint-body">
-          <p style="color: var(--text-muted);">Notifica que uno o más mensajes han sido leídos por el receptor. Se
-            incluye <code>target_user_id</code> para propagar la actualización de estado al remitente original.</p>
-          <div class="payload-grid">
-            <div class="code-block">
-              <div class="code-header"><span>1. Emisión del Cliente (MarkMessagesReadRequest)</span><span>JSON</span>
-              </div>
-              <pre><code>{
-  "chat_id": "6a022c0a50bf64cf1674e287",
-  "user_id": "6727ea0d6f4b3358a701dd7d",
-  "message_ids": [
-    "67a1b2c3d4e5f67890123457"
-  ],
-  "target_user_id": "672800e46f4b3358a701fa9c"
-}</code></pre>
-            </div>
-            <div class="code-block">
-              <div class="code-header"><span>2. Respuesta del Servidor (socket.on("response"))</span><span>JSON</span>
-              </div>
-              <pre><code>{
-  "type": "response",
-  "payload": {
-    "success": true,
-    "message": "Mensajes marcados como leídos",
-    "updated_count": 1,
-    "message_ids": [
-      "67a1b2c3d4e5f67890123457"
-    ]
-  }
-}</code></pre>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <!-- 1.6 EDIT MESSAGE -->
-      <article class="endpoint-card" id="chat-edit-message">
-        <div class="endpoint-header">
-          <div class="endpoint-title">
-            <span class="badge badge-emit">EMIT</span>
-            <h3>chat.edit_message</h3>
-          </div>
-        </div>
-        <div class="endpoint-body">
-          <p style="color: var(--text-muted);">Edita el contenido de un mensaje existente, siempre y cuando no hayan
-            transcurrido más de 3 minutos desde su creación. Devuelve la entidad actualizada dentro del payload con los
-            sellos de tiempo en formato Protobuf Timestamp (<code>seconds</code> y <code>nanos</code>).</p>
-
-          <div class="callout callout-warning">
-            <span class="callout-icon">⚠️</span>
-            <div>
-              <strong>Restricción:</strong> Solo se permite editar un mensaje dentro de los primeros <strong>3 minutos
-                (180 segundos)</strong> posteriores a su envío (<code>created_at</code>). Si se intenta editar después
-              de este lapso, el servidor rechazará la solicitud devolviendo un error.
-            </div>
-          </div>
-
-          <div class="payload-grid">
-            <div class="code-block">
-              <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span></div>
-              <pre><code>{
-  "message_id": "6a6145b055502227402bc597",
-  "new_message": "Hola, este es un mensaje de prueba-Actualiza2",
-  "target_user_id": "6727ea0d6f4b3358a701dd7d"
-}</code></pre>
-            </div>
-            <div class="code-block">
-              <div class="code-header"><span>2. Respuesta del Servidor (socket.on("response"))</span><span>JSON</span>
-              </div>
-              <pre><code>{
-  "type": "response",
-  "payload": {
-    "id": "6a6145b055502227402bc597",
-    "chat_id": "6a4828b851be3b4af3f7c247",
-    "temp_id": "aTHiJM93SriZUjZ0EOzx9",
-    "sender": {
-      "profile_id": "672800e46f4b3358a701fa9d",
-      "user_id": "672800e46f4b3358a701fa9c",
-      "name": "Carlos Santana",
-      "avatar": "https://storage.googleapis.com/media-temp.cuboconecta.com/avatars/1778611747_media.jpg"
-    },
-    "message_type": "TEXT",
-    "message": "Hola, este es un mensaje de prueba-Actualiza2",
-    "ciphertext": "",
-    "source": "",
-    "created_at": {
-      "seconds": "1784759728",
-      "nanos": 42000000
-    },
-    "updated_at": {
-      "seconds": "1784759741",
-      "nanos": 605000000
-    },
-    "response_msg_id": "66ecb08136913f91ab45fddf",
-    "deleted_by": null,
-    "keys": [
-      {
-        "device_id": "abc123",
-        "encrypted_key": "xyz789"
-      }
-    ],
-    "nonce": "",
-    "sender_device_id": "",
-    "reply_to": {
-      "id": "6a74cc9eb4d074f7ceb342c4",
-      "sender_profile_id": "672800e46f4b3358a701fa9d",
-      "sender_name": "Tú",
-      "text": "Hola buen dia"
-    },
-    "status": "SENT"
-  }
-}</code></pre>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <!-- 1.7 DELETE MESSAGES -->
-      <article class="endpoint-card" id="chat-delete-messages">
-        <div class="endpoint-header">
-          <div class="endpoint-title">
-            <span class="badge badge-emit">EMIT</span>
-            <h3>chat.delete_messages</h3>
-          </div>
-        </div>
-        <div class="endpoint-body">
-          <p style="color: var(--text-muted);">Elimina uno o varios mensajes (acepta un arreglo de IDs). Si
-            <code>delete_for_everyone</code> es <code>true</code>, elimina los mensajes para todos los miembros del chat
-            (válido únicamente dentro de los primeros 10 minutos desde su envío). Si es <code>false</code>, solo se
-            ocultan para el usuario que realiza la petición.
-          </p>
-
-          <div class="callout callout-warning">
-            <span class="callout-icon">⚠️</span>
-            <div>
-              <strong>Restricción:</strong> Solo se permite eliminar un mensaje para todos dentro de los primeros
-              <strong>10 minutos (600 segundos)</strong> posteriores a su envío (<code>created_at</code>). Si se intenta
-              eliminar después de este lapso, el servidor rechazará la solicitud devolviendo un error.
-            </div>
-          </div>
-
-          <div class="payload-grid">
-            <div class="code-block">
-              <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span></div>
-              <pre><code>{
-  "chat_id": "6a022c0a50bf64cf1674e287",
-  "user_id": "672800e46f4b3358a701fa9c",
-  "target_user_id": "6727ea0d6f4b3358a701dd7d",
-  "message_ids": [
-    "67a1b2c3d4e5f67890123457",
-    "67a1b2c3d4e5f67890123458"
-  ],
-  "delete_for_everyone": true
-}</code></pre>
-            </div>
-            <div class="code-block">
-              <div class="code-header"><span>2. Respuesta del Servidor (socket.on("response"))</span><span>JSON</span>
-              </div>
-              <pre><code>{
-  "type": "response",
-  "payload": {
-    "success": true,
-    "deleted_count": 2,
-    "deleted_message_ids": [
-      "67a1b2c3d4e5f67890123457",
-      "67a1b2c3d4e5f67890123458"
-    ]
-  }
-}</code></pre>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <!-- 1.8 DELETE CHATS -->
-      <article class="endpoint-card" id="chat-delete-chats">
-        <div class="endpoint-header">
-          <div class="endpoint-title">
-            <span class="badge badge-emit">EMIT</span>
-            <h3>chat.delete_chats</h3>
-          </div>
-        </div>
-        <div class="endpoint-body">
-          <p style="color: var(--text-muted);">Elimina uno o varios chats (acepta un arreglo de IDs) para el usuario
-            actual, con opción de eliminar para todos los participantes.</p>
-          <div class="payload-grid">
-            <div class="code-block">
-              <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span></div>
-              <pre><code>{
-  "user_id": "672800e46f4b3358a701fa9d",
-  "chat_ids": [
-    "6a022c0a50bf64cf1674e287",
-    "7b133d1b61ca75da2785f398"
-  ],
-  "delete_for_everyone": false
-}</code></pre>
-            </div>
-            <div class="code-block">
-              <div class="code-header"><span>2. Respuesta del Servidor (socket.on("response"))</span><span>JSON</span>
-              </div>
-              <pre><code>{
-  "type": "response",
-  "payload": {
-    "success": true,
-    "deleted_count": 2,
-    "deleted_chat_ids": [
-      "6a022c0a50bf64cf1674e287",
-      "7b133d1b61ca75da2785f398"
-    ]
-  }
-}</code></pre>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <!-- 1.9 TYPING ACTIONS -->
-      <article class="endpoint-card" id="chat-typing-action">
-        <div class="endpoint-header">
-          <div class="endpoint-title">
-            <span class="badge badge-emit">EMIT</span>
-            <h3>chat.start_typing / chat.stop_typing</h3>
-          </div>
-        </div>
-        <div class="endpoint-body">
-          <p style="color: var(--text-muted);">Notifica el estado de escritura del usuario hacia el
-            <code>target_user_id</code>.
-          </p>
-          <div class="code-block" style="margin-top: 1rem;">
-            <div class="code-header"><span>Petición (Cliente ➔ Servidor)</span><span>JSON</span></div>
-            <pre><code>{
-  "chat_id": "6a022c0a50bf64cf1674e287",
-  "user_id": "6727ea0d6f4b3358a701dd7d",
-  "target_user_id": "672800e46f4b3358a701fa9c"
-}</code></pre>
-          </div>
-        </div>
-      </article>
-    </section>
-
-    <!-- SECTION 2: STREAMS EN TIEMPO REAL -->
-    <section id="streams">
-      <h2>2. EVENTOS STREAM EN TIEMPO REAL (ESCUCHADORES)</h2>
-
-      <!-- 2.1 STREAM CHAT MESSAGE -->
-      <article class="endpoint-card" id="stream-chat-message">
-        <div class="endpoint-header">
-          <div class="endpoint-title">
-            <span class="badge badge-stream">LISTEN</span>
-            <h3>Evento: chat.message</h3>
-          </div>
-        </div>
-        <div class="endpoint-body">
-          <p style="color: var(--text-muted);">Evento pasivo retransmitido por el backend al <code>target_user_id</code>
-            especificado cuando se procesa, edita o elimina un mensaje.
-          </p>
-          <div class="code-block" style="margin-top: 1rem;">
-            <div class="code-header"><span>Payload Recibido (socket.on("chat.message",
-                callback))</span><span>JSON</span></div>
-            <pre><code>{
-  "type": "response",
-  "payload": {
-    "id": "67a1b2c3d4e5f67890123457",
-    "chat_id": "6a022c0a50bf64cf1674e287",
-    "temp_id": "aTHiJM93SriZUjZ0EOzx9",
-    "sender": {
-      "user_id": "672800e46f4b3358a701fa9c",
-      "profile_id": "672800e46f4b3358a701fa9d",
-      "name": "Carlos Santana",
-      "avatar": "https://storage.googleapis.com/media-temp.cuboconecta.com/avatars/avatar.jpg"
-    },
-    "message_type": "TEXT",
-    "message": "Hola, ¿cómo estás?",
-    "ciphertext": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "source": "",
-    "created_at": "2026-07-22T20:15:00.000Z",
-    "updated_at": "",
-    "response_msg_id": "6a74cc9eb4d074f7ceb342c4",
-    "deleted_by": null,
-    "keys": [
-      {
-        "device_id": "dev_mobile_01",
-        "encrypted_key": "enc_key_xyz..."
-      }
-    ],
-    "nonce": "nonce_val_999",
-    "sender_device_id": "uuid-temp-mobile-12345",
-    "reply_to": {
-      "id": "6a74cc9eb4d074f7ceb342c4",
-      "sender_profile_id": "672800e46f4b3358a701fa9d",
-      "sender_name": "Tú",
-      "text": "Hola buen dia"
-    },
-    "status": "SENT"
-  }
-}</code></pre>
-          </div>
-        </div>
-      </article>
-
-      <!-- 2.2 STREAM MESSAGE STATUS -->
-      <article class="endpoint-card" id="stream-message-status">
-        <div class="endpoint-header">
-          <div class="endpoint-title">
-            <span class="badge badge-stream">LISTEN</span>
-            <h3>Evento: chat.message_status</h3>
-          </div>
-        </div>
-        <div class="endpoint-body">
-          <p style="color: var(--text-muted);">Evento pasivo retransmitted hacia el <code>target_user_id</code>
-            (remitente original) notificando la confirmación de entrega o lectura de sus mensajes.</p>
-          <div class="code-block" style="margin-top: 1rem;">
-            <div class="code-header"><span>Payload Recibido (socket.on("chat.message_status",
-                callback))</span><span>JSON</span></div>
-            <pre><code>{
-  "type": "response",
-  "payload": {
-    "success": true,
-    "message": "Mensajes marcados como leídos",
-    "updated_count": 1,
-    "message_ids": [
-      "67a1b2c3d4e5f67890123457"
-    ],
-    "last_message": {
-          "message_id": "67a1b2c3d4e5f67890123456",
-          "message_type": "TEXT",
-          "content": "Esta es una prueba",
-          "sender_id": "672800e46f4b3358a701fa9c",
-          "created_at": "2026-07-22T20:14:37.218Z",
-          "status": "READ"
-        },
-  }
-}</code></pre>
-          </div>
-        </div>
-      </article>
-
-      <!-- 2.3 STREAM TYPING STATUS -->
-      <article class="endpoint-card" id="stream-typing-status">
-        <div class="endpoint-header">
-          <div class="endpoint-title">
-            <span class="badge badge-stream">LISTEN</span>
-            <h3>Evento: chat.typing_status / chat.typing_sender</h3>
-          </div>
-        </div>
-        <div class="endpoint-body">
-          <p style="color: var(--text-muted);">Eventos pasivos retransmitidos por el servidor únicamente al destinatario
-            del chat (<code>target_user_id</code>) notificando que alguien está o dejó de escribir.
-          </p>
-          <div class="code-block" style="margin-top: 1rem;">
-            <div class="code-header"><span>Payload Recibido (socket.on("chat.typing_status",
-                callback))</span><span>JSON</span></div>
-            <pre><code>{
-  "type": "response",
-  "payload": {
-    "status": true
-  }
-}</code></pre>
-          </div>
-        </div>
-      </article>
-    </section>
-
-    <!-- SECTION 3: EVENTOS DE PRESENCIA -->
-    <section id="presencia">
-      <h2>3. EVENTOS DE PRESENCIA</h2>
-
-      <!-- 3.1 PRESENCE SNAPSHOT -->
-      <article class="endpoint-card" id="presence-snapshot">
-        <div class="endpoint-header">
-          <div class="endpoint-title">
-            <span class="badge badge-presence">PRESENCIA</span>
-            <h3>presence.snapshot</h3>
-          </div>
-        </div>
-        <div class="endpoint-body">
-          <p style="color: var(--text-muted);">Solicita la presencia de un listado de usuarios.</p>
-          <div class="payload-grid">
-            <div class="code-block">
-              <div class="code-header"><span>Petición (Cliente ➔ Servidor)</span><span>JSON</span></div>
-              <pre><code>{
-  "user_ids": [
-    "672800e46f4b3358a701fa9c",
-    "6931d2081be27e64d77a0059"
-  ]
-}</code></pre>
-            </div>
-            <div class="code-block">
-              <div class="code-header"><span>Respuesta Recibida (socket.on("presence.snapshot"))</span><span>JSON</span>
-              </div>
-              <pre><code>{
-  "data": {
-    "672800e46f4b3358a701fa9c": true,
-    "6931d2081be27e64d77a0059": false
-  }
-}</code></pre>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <!-- 3.2 PRESENCE WATCH -->
-      <article class="endpoint-card" id="presence-watch">
-        <div class="endpoint-header">
-          <div class="endpoint-title">
-            <span class="badge badge-presence">PRESENCIA</span>
-            <h3>presence.watch</h3>
-          </div>
-        </div>
-        <div class="endpoint-body">
-          <p style="color: var(--text-muted);">Suscripción en tiempo real a la presencia de un usuario específico.</p>
-          <div class="code-block" style="margin-top: 1rem;">
-            <div class="code-header"><span>Petición (Cliente ➔ Servidor)</span><span>JSON</span></div>
-            <pre><code>{
-  "user_id": "6931d2081be27e64d77a0059"
-}</code></pre>
-          </div>
-        </div>
-      </article>
-    </section>
-
-  </main>
-
+  <!-- Bootstrap 5.3 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Service - Documentación API Gateway</title>
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-color: #38bdf8;
+            --code-bg: #090d16;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        /* Sidebar personalizado para escritorio */
+        .sidebar {
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border-color);
+        }
+
+        /* Logo de marca estilo Cubo Conecta */
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px -1px rgba(56, 189, 248, 0.2);
+        }
+
+        /* Tarjetas de Endpoints */
+        .endpoint-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .endpoint-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .badge-post {
+            background-color: rgba(74, 222, 128, 0.15);
+            color: #4ade80;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .grpc-ref {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: monospace;
+        }
+
+        /* Estilos de navegación lateral */
+        .nav-link {
+            color: var(--text-muted);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-main) !important;
+        }
+
+        /* Bloques de código */
+        .code-block {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .code-header {
+            background-color: rgba(255, 255, 255, 0.03);
+            padding: 0.5rem 0.75rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        pre {
+            padding: 1rem;
+            margin: 0;
+            overflow-x: auto;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #38bdf8;
+        }
+
+        .callout {
+            background-color: rgba(56, 189, 248, 0.08);
+            border-left: 4px solid var(--accent-color);
+            padding: 1rem;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+
+            <!-- SIDEBAR RESPONSIVO FIJO -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar p-3 collapse position-sticky top-0" id="sidebarMenu"
+                style="height: 100vh; overflow-y: auto;">
+                <div class="pt-3">
+                    <!-- Logo / Identidad visual homologada -->
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                        <div class="brand-logo">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                        </div>
+                        <span class="h6 fw-bold mb-0 text-white">Cubo Conecta</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <span class="d-block text-uppercase mb-2"
+                            style="font-size: 0.75rem; letter-spacing: 0.05em; color: var(--text-muted);">Navegación</span>
+                        <ul class="nav flex-column gap-1">
+                            <li class="nav-item"><a class="nav-link py-1 px-2" href="index.html">🏠 Inicio</a></li>
+                            <li class="nav-item"><a class="nav-link py-1 px-2 active" href="search.service.html">🔍
+                                    Search Service</a></li>
+                            <li class="nav-item"><a class="nav-link py-1 px-2" href="chat.service.html">💬 Chat
+                                    Service</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-3">
+                        <span class="d-block text-uppercase fs-7 text-muted mb-2"
+                            style="font-size: 0.75rem; letter-spacing: 0.05em;">API Gateway (Gin)</span>
+                        <ul class="nav flex-column gap-1">
+                            <li class="nav-item"><a class="nav-link py-1 px-2" href="#search-users">POST /users</a></li>
+                            <li class="nav-item"><a class="nav-link py-1 px-2" href="#search-chat-users">POST /chats</a>
+                            </li>
+                            <li class="nav-item"><a class="nav-link py-1 px-2" href="#search-posts">POST /posts</a></li>
+                            <li class="nav-item"><a class="nav-link py-1 px-2" href="#search-comments">POST
+                                    /comments</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- MAIN CONTENT -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+
+                <!-- Botón para desplegar menú en dispositivos móviles -->
+                <div class="d-md-none mb-4">
+                    <button class="btn btn-outline-light btn-sm" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                        ☰ Menú de Navegación
+                    </button>
+                </div>
+
+                <header class="mb-5">
+                    <h1 class="h2 fw-bold">Search Service</h1>
+                    <p class="text-secondary lead fs-6">Documentación técnica de rutas expuestas por el API Gateway
+                        (Gin) y su conexión con el microservicio gRPC de búsqueda.</p>
+                </header>
+
+                <!-- SECTION: API GATEWAY SEARCH ENDPOINTS -->
+                <section id="search-service-docs">
+                    <h2 class="h5 text-info border-bottom pb-2 mb-4">ENDPOINTS HTTP / GIN</h2>
+
+                    <!-- 5.1 SEARCH USERS -->
+                    <article class="endpoint-card" id="search-users">
+                        <div class="endpoint-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge badge-post">POST</span>
+                                <h3 class="h6 font-monospace mb-0 text-white">/api/v1/search/users</h3>
+                            </div>
+                            <span class="grpc-ref">gRPC: SearchService.SearchUsers</span>
+                        </div>
+                        <div class="endpoint-body p-3 p-md-4">
+                            <p class="text-secondary mb-3">Búsqueda general de perfiles en el sistema por nombre o
+                                username.</p>
+                            <div class="row g-3">
+                                <div class="col-xl-6">
+                                    <div class="code-block">
+                                        <div class="code-header">Request Body (JSON)</div>
+                                        <pre><code>{
+  "query": "Juan",
+  "page": 1,
+  "size": 10
+}</code></pre>
+                                    </div>
+                                </div>
+                                <div class="col-xl-6">
+                                    <div class="code-block">
+                                        <div class="code-header">Response (JSON)</div>
+                                        <pre><code>{
+  "users": [
+    {
+      "id": "672800e46f4b3358a701fa9c",
+      "username": "juanp",
+      "title": "Juan Pérez",
+      "avatar": "https://storage.googleapis.com/.../avatar.jpg",
+      "birthdate": "2000-01-01"
+    }
+  ],
+  "total": 1,
+  "has_next_page": false
+}</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- 5.2 SEARCH CHAT USERS -->
+                    <article class="endpoint-card" id="search-chat-users">
+                        <div class="endpoint-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge badge-post">POST</span>
+                                <h3 class="h6 font-monospace mb-0 text-white">/api/v1/search/chats</h3>
+                            </div>
+                            <span class="grpc-ref">gRPC: SearchService.SearchChatUsers</span>
+                        </div>
+                        <div class="endpoint-body p-3 p-md-4">
+                            <p class="text-secondary mb-3">Búsqueda enfocada al autocompletado para chats, aplicando
+                                restricciones de edad, roles y bloqueos.</p>
+
+                            <div class="callout mb-3">
+                                <strong>Nota de Arquitectura:</strong> Gestionado en el controlador
+                                <code>search.SearchController.SearchChatUsers-fm</code> a través del API Gateway.
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-xl-6">
+                                    <div class="code-block">
+                                        <div class="code-header">Request Body (JSON)</div>
+                                        <pre><code>{
+  "query": "Ana",
+  "size": 15
+}</code></pre>
+                                    </div>
+                                </div>
+                                <div class="col-xl-6">
+                                    <div class="code-block">
+                                        <div class="code-header">Response (JSON)</div>
+                                        <pre><code>{
+  "users": [
+    {
+      "id": "6727ea0d6f4b3358a701dd7d",
+      "username": "anag",
+      "title": "Ana García",
+      "avatar": "https://storage.googleapis.com/.../ana.jpg",
+      "user_id": "6727ea0d6f4b3358a701dd7d"
+    }
+  ]
+}</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- 5.3 SEARCH POSTS -->
+                    <article class="endpoint-card" id="search-posts">
+                        <div class="endpoint-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge badge-post">POST</span>
+                                <h3 class="h6 font-monospace mb-0 text-white">/api/v1/search/posts</h3>
+                            </div>
+                            <span class="grpc-ref">gRPC: SearchService.SearchPosts</span>
+                        </div>
+                        <div class="endpoint-body p-3 p-md-4">
+                            <p class="text-secondary mb-3">Búsqueda de texto completo dentro de publicaciones con autor,
+                                multimedia, contadores e interacciones.</p>
+                            <div class="row g-3">
+                                <div class="col-xl-6">
+                                    <div class="code-block">
+                                        <div class="code-header">Request Body (JSON)</div>
+                                        <pre><code>{
+  "query": "tecnología",
+  "page": 1,
+  "size": 10
+}</code></pre>
+                                    </div>
+                                </div>
+                                <div class="col-xl-6">
+                                    <div class="code-block">
+                                        <div class="code-header">Response (JSON)</div>
+                                        <pre><code>{
+  "posts": [
+    {
+      "id": "67a1b2c3d4e5f67890123499",
+      "body": "Explorando nuevas tendencias de backend.",
+      "profile_id": "672800e46f4b3358a701fa9d",
+      "created_at": "2026-10-05T10:00:00.000Z",
+      "multimedia": [
+        {
+          "thumbnail": "https://storage.googleapis.com/.../thumb.jpg",
+          "multimedia": "https://storage.googleapis.com/.../master.m3u8",
+          "media_id": "med_01",
+          "aspect_ratio": 1.7778,
+          "width": 1920,
+          "height": 1080,
+          "orientation": "horizontal",
+          "media_type": "video"
+        }
+      ],
+      "profile": {
+        "profile_id": "672800e46f4b3358a701fa9d",
+        "display_name": "Carlos Santana",
+        "avatar_url": "https://storage.googleapis.com/.../avatar.jpg"
+      },
+      "likes_count": 25,
+      "comments_count": 4,
+      "reposts_count": 2,
+      "shares_count": 1,
+      "saves_count": 5,
+      "has_liked": true,
+      "has_reposted": false,
+      "has_saved": false,
+      "is_following_author": true
+    }
+  ],
+  "total": 1,
+  "has_next_page": false
+}</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- 5.4 SEARCH COMMENTS -->
+                    <article class="endpoint-card" id="search-comments">
+                        <div class="endpoint-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge badge-post">POST</span>
+                                <h3 class="h6 font-monospace mb-0 text-white">/api/v1/search/comments</h3>
+                            </div>
+                            <span class="grpc-ref">gRPC: SearchService.SearchComments</span>
+                        </div>
+                        <div class="endpoint-body p-3 p-md-4">
+                            <p class="text-secondary mb-3">Búsqueda de texto dentro de comentarios asociados a posts o
+                                stories mediante <code>target_id</code> y <code>target_type</code>.</p>
+                            <div class="row g-3">
+                                <div class="col-xl-6">
+                                    <div class="code-block">
+                                        <div class="code-header">Request Body (JSON)</div>
+                                        <pre><code>{
+  "query": "excelente",
+  "page": 1,
+  "size": 10
+}</code></pre>
+                                    </div>
+                                </div>
+                                <div class="col-xl-6">
+                                    <div class="code-block">
+                                        <div class="code-header">Response (JSON)</div>
+                                        <pre><code>{
+  "comments": [
+    {
+      "id": "67a1b2c3d4e5f67890123500",
+      "comment": "Excelente aportación.",
+      "post_id": "67a1b2c3d4e5f67890123499",
+      "profile_id": "6727ea0d6f4b3358a701dd7d",
+      "created_at": "2026-10-05T11:30:00.000Z",
+      "target_id": "67a1b2c3d4e5f67890123499",
+      "target_type": "POST"
+    }
+  ],
+  "total": 1,
+  "has_next_page": false
+}</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5.3 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
