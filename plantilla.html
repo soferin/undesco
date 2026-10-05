@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Marca - OUBO (Documentación Interactiva)</title>
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #0b0f19;
+            --bg-card: #111827;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-primary: #38bdf8;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+        }
+
+        /* Sidebar Fijo de Navegación */
+        @media (min-width: 768px) {
+            .sidebar.offcanvas-md {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 260px;
+                transform: none;
+                visibility: visible !important;
+                background-color: var(--bg-card);
+                border-right: 1px solid var(--border-color);
+                z-index: 1040;
+                overflow-y: auto;
+            }
+        }
+
+        .sidebar {
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border-color);
+        }
+
+        .app-header-fixed {
+            position: sticky;
+            top: 0;
+            background-color: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1030;
+            padding: 0.75rem 1.5rem;
+        }
+
+        main.ms-md-auto {
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            padding: 0 !important;
+        }
+
+        .content-body {
+            padding: 2.5rem;
+            flex: 1;
+            max-width: 1050px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            padding-left: 0.5rem;
+        }
+
+        .brand-logo {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #ec4899, var(--accent-primary));
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #fff;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-item a {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            border-radius: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .nav-item a:hover,
+        .nav-item a.active {
+            background-color: rgba(56, 189, 248, 0.1);
+            color: var(--accent-primary) !important;
+        }
+
+        /* Estilo idéntico a las páginas del PDF original */
+        .pdf-page {
+            position: relative;
+            width: 100%;
+            background: linear-gradient(135deg, #0a0a2e 0%, #1a103c 50%, #050214 100%);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 40px;
+            margin-bottom: 40px;
+            scroll-margin-top: 100px;
+        }
+
+        .page-indicator {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 1px;
+            font-family: monospace;
+        }
+
+        .page-cover {
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            aspect-ratio: 16 / 9;
+        }
+
+        .cover-frame {
+            border: 2px solid;
+            border-image: linear-gradient(135deg, #ec4899, #38bdf8) 1;
+            padding: 35px 70px;
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.2), inset 0 0 30px rgba(236, 72, 153, 0.2);
+            background: rgba(10, 10, 46, 0.6);
+        }
+
+        .cover-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: 0.15em;
+            background: linear-gradient(90deg, #ec4899, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .cover-subtitle {
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4em;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .page-header-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: #38bdf8;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+
+        .page-content h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .page-content p,
+        .page-content li {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 8px;
+        }
+
+        /* Estilo específico para la cuadrícula de colores de la página 8 */
+        .color-rows-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .color-row-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .color-row-grid {
+            display: grid;
+            grid-template-columns: repeat(11, 1fr);
+            gap: 6px;
+        }
+
+        .color-swatch-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .swatch-box {
+            height: 28px;
+            width: 100%;
+        }
+
+        .swatch-info {
+            padding: 3px 2px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .swatch-step {
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.5);
+            display: block;
+        }
+
+        .swatch-hex {
+            font-size: 0.55rem;
+            color: #fff;
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+
+            <!-- SIDEBAR DE NAVEGACIÓN -->
+            <nav class="offcanvas-md offcanvas-start sidebar p-3" tabindex="-1" id="sidebarMenu"
+                aria-labelledby="sidebarMenuLabel">
+                <div class="offcanvas-header d-md-none pb-2 pt-0 px-0">
+                    <h5 class="offcanvas-title text-white" id="sidebarMenuLabel" style="font-size: 1rem;">Navegación
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                        data-bs-target="#sidebarMenu" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body p-0 flex-column">
+                    <div class="pt-1 w-100">
+                        <div class="brand">
+                            <div class="brand-logo">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white"
+                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                </svg>
+                            </div>
+                            <span class="brand-title">Manual de Marca</span>
+                        </div>
+
+                        <div class="mb-3">
+                            <span class="d-block text-uppercase mb-2"
+                                style="font-size: 0.7rem; letter-spacing: 0.05em; color: var(--text-muted);">Páginas del
+                                PDF</span>
+                            <ul class="nav flex-column gap-1">
+                                <li class="nav-item"><a class="nav-link active" href="#pagina-4">📄 Página 4
+                                        (Portada)</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#pagina-5">📄 Página 5 (Logotipo)</a>
+                                </li>
+                                <li class="nav-item"><a class="nav-link" href="#pagina-6">📄 Página 6 (Tipografía)</a>
+                                </li>
+                                <li class="nav-item"><a class="nav-link" href="#pagina-7">📄 Página 7 (Paleta Color)</a>
+                                </li>
+                                <li class="nav-item"><a class="nav-link" href="#pagina-8">📄 Página 8 (Gama de
+                                        Colores)</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#pagina-9">📄 Página 9 (Compromiso)</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- CONTENEDOR PRINCIPAL CON HEADER FIJO -->
+            <main class="col-12 col-md-9 ms-md-auto col-lg-10">
+
+                <header class="app-header-fixed d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-3">
+                        <button class="btn btn-outline-light btn-sm d-md-none" type="button" data-bs-toggle="offcanvas"
+                            data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
+                            ☰ Menú
+                        </button>
+                        <h2 class="h6 m-0 text-white font-monospace">OUBO - Transcripción Interactiva por Páginas</h2>
+                    </div>
+                </header>
+
+                <div class="content-body">
+
+                    <!-- PÁGINA 4 -->
+                    <section class="pdf-page page-cover" id="pagina-4">
+                        <span class="page-indicator">Pág. 4 / 9</span>
+                        <div class="cover-frame">
+                            <h1 class="cover-title">OUBO</h1>
+                            <p class="cover-subtitle">Manual de Marca</p>
+                        </div>
+                    </section>
+
+                    <!-- PÁGINA 5 -->
+                    <section class="pdf-page" id="pagina-5">
+                        <span class="page-indicator">Pág. 5 / 9</span>
+                        <div class="page-header-title">OUBO</div>
+                        <div class="page-content">
+                            <h3>Directrices del Logotipo</h3>
+                            <p><strong>1. Versión del logotipo:</strong> Diseñado específicamente para fondos oscuros.
+                                Úsalo sin modificaciones en sus colores neón o degradados[cite: 5].</p>
+                            <p><strong>2. Contraste y visibilidad:</strong> Colócalo sobre fondos oscuros puros o
+                                uniformes, evitando patrones complejos[cite: 5].</p>
+                            <p><strong>3. Espaciado:</strong> Respeta el área de reserva dejando al menos el ancho de un
+                                marco como espacio libre[cite: 5].</p>
+                            <p><strong>4. Ajustes permitidos:</strong> No cambies los tonos del marco luminoso; puedes
+                                ajustar brillo general si el fondo satura[cite: 5].</p>
+                            <p><strong>5. Consistencia:</strong> Mantén la alta calidad del efecto luminoso sin
+                                pixelación en web, redes e impresos[cite: 5].</p>
+                        </div>
+                        <div style="font-size: 0.7rem; color: rgba(255,255,255,0.4);">Manual de Marca Oficial</div>
+                    </section>
+
+                    <!-- PÁGINA 6 -->
+                    <section class="pdf-page" id="pagina-6">
+                        <span class="page-indicator">Pág. 6 / 9</span>
+                        <div class="page-header-title">OUBO — Tipografía</div>
+                        <div class="page-content">
+                            <p>La tipografía refleja profesionalismo, modernidad y claridad, alineándose con el estilo
+                                tecnológico de la marca[cite: 6].</p>
+                            <p><strong>BW Modelica Bold:</strong> Usada exclusivamente para encabezados, títulos y
+                                elementos destacados[cite: 6].</p>
+                            <p><strong>BW Modelica Regular:</strong> Ideal para textos secundarios, párrafos
+                                informativos y lectura fluida[cite: 6].</p>
+                            <p style="font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-top: 6px;">
+                                <em>Directriz:</em> Evita condensar demasiado los textos y usa máximo dos estilos
+                                tipográficos por diseño[cite: 6].
+                            </p>
+                        </div>
+                        <div style="font-size: 0.7rem; color: rgba(255,255,255,0.4);">Manual de Marca Oficial</div>
+                    </section>
+
+                    <!-- PÁGINA 7 -->
+                    <section class="pdf-page" id="pagina-7">
+                        <span class="page-indicator">Pág. 7 / 9</span>
+                        <div class="page-header-title">OUBO — Paleta de Colores</div>
+                        <div class="page-content">
+                            <p>Tonos neón y degradados que transmiten energía, innovación y creatividad sobre fondos
+                                oscuros[cite: 7].</p>
+                            <p><strong>Color de fondo principal:</strong> Azul profundo[cite: 7]</p>
+                            <ul style="font-size: 0.8rem; color: rgba(255,255,255,0.8);">
+                                <li>Código HEX: <code>#0A0A2E</code>[cite: 7]</li>
+                                <li>Uso: Fondo base uniforme para resaltar los efectos luminosos y degradados entre rosa
+                                    y azul neón[cite: 7].</li>
+                            </ul>
+                        </div>
+                        <div style="font-size: 0.7rem; color: rgba(255,255,255,0.4);">Manual de Marca Oficial</div>
+                    </section>
+
+                    <!-- PÁGINA 8: GAMA DE COLORES EXACTA (CON CUADRÍCULAS VISUALES) -->
+                    <section class="pdf-page" id="pagina-8">
+                        <span class="page-indicator">Pág. 8 / 9</span>
+                        <div class="page-header-title">OUBO — Gama de Colores (Rangos 50 - 950)</div>
+                        <div class="page-content">
+                            <div class="color-rows-container">
+
+                                <!-- Fila 1: Cyan Range -->
+                                <div class="color-row-group">
+                                    <div class="color-row-grid">
+                                        <!-- 50 a 950 Cyan -->
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #eafffc;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">50</span><span
+                                                    class="swatch-hex">#eafffc</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #cbffff;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">100</span><span
+                                                    class="swatch-hex">#cbffff</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #9efff9;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">200</span><span
+                                                    class="swatch-hex">#9efff9</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #5bfff9;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">300</span><span
+                                                    class="swatch-hex">#5bfff9</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #37fdff;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">400</span><span
+                                                    class="swatch-hex">#37fdff</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #00dee5;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">500</span><span
+                                                    class="swatch-hex">#00dee5</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #00b1c0;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">600</span><span
+                                                    class="swatch-hex">#00b1c0</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #038d9b;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">700</span><span
+                                                    class="swatch-hex">#038d9b</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #0d707d;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">800</span><span
+                                                    class="swatch-hex">#0d707d</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #105c69;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">900</span><span
+                                                    class="swatch-hex">#105c69</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #033e49;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">950</span><span
+                                                    class="swatch-hex">#033e49</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Fila 2: Magenta Range -->
+                                <div class="color-row-group">
+                                    <div class="color-row-grid">
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #fef4ff;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">50</span><span
+                                                    class="swatch-hex">#fef4ff</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #fde7ff;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">100</span><span
+                                                    class="swatch-hex">#fde7ff</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #fccfff;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">200</span><span
+                                                    class="swatch-hex">#fccfff</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #fcb4fe;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">300</span><span
+                                                    class="swatch-hex">#fcb4fe</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #fa76fc;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">400</span><span
+                                                    class="swatch-hex">#fa76fc</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #f142f3;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">500</span><span
+                                                    class="swatch-hex">#f142f3</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #d722d5;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">600</span><span
+                                                    class="swatch-hex">#d722d5</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #b219ac;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">700</span><span
+                                                    class="swatch-hex">#b219ac</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #92168d;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">800</span><span
+                                                    class="swatch-hex">#92168d</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #771870;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">900</span><span
+                                                    class="swatch-hex">#771870</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #50024b;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">950</span><span
+                                                    class="swatch-hex">#50024b</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Fila 3: Purple Range -->
+                                <div class="color-row-group">
+                                    <div class="color-row-grid">
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #fcf7fc;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">50</span><span
+                                                    class="swatch-hex">#fcf7fc</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #f7eff8;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">100</span><span
+                                                    class="swatch-hex">#f7eff8</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #efddf1;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">200</span><span
+                                                    class="swatch-hex">#efddf1</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #e4c2e5;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">300</span><span
+                                                    class="swatch-hex">#e4c2e5</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #d39dd5;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">400</span><span
+                                                    class="swatch-hex">#d39dd5</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #bd76bf;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">500</span><span
+                                                    class="swatch-hex">#bd76bf</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #a257a2;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">600</span><span
+                                                    class="swatch-hex">#a257a2</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #854684;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">700</span><span
+                                                    class="swatch-hex">#854684</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #6d3b6b;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">800</span><span
+                                                    class="swatch-hex">#6d3b6b</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #5b3459;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">900</span><span
+                                                    class="swatch-hex">#5b3459</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #391938;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">950</span><span
+                                                    class="swatch-hex">#391938</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Fila 4: Pink / Red Range -->
+                                <div class="color-row-group">
+                                    <div class="color-row-grid">
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #fdf3f4;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">50</span><span
+                                                    class="swatch-hex">#fdf3f4</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #fbe8eb;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">100</span><span
+                                                    class="swatch-hex">#fbe8eb</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #f6d5da;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">200</span><span
+                                                    class="swatch-hex">#f6d5da</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #ea9daa;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">300</span><span
+                                                    class="swatch-hex">#ea9daa</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #e58799;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">400</span><span
+                                                    class="swatch-hex">#e58799</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #d75c77;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">500</span><span
+                                                    class="swatch-hex">#d75c77</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #c13d60;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">600</span><span
+                                                    class="swatch-hex">#c13d60</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #a22e4f;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">700</span><span
+                                                    class="swatch-hex">#a22e4f</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #882947;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">800</span><span
+                                                    class="swatch-hex">#882947</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #752642;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">900</span><span
+                                                    class="swatch-hex">#752642</span></div>
+                                        </div>
+                                        <div class="color-swatch-card">
+                                            <div class="swatch-box" style="background-color: #411020;"></div>
+                                            <div class="swatch-info"><span class="swatch-step">950</span><span
+                                                    class="swatch-hex">#411020</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div style="font-size: 0.7rem; color: rgba(255,255,255,0.4);">Manual de Marca Oficial</div>
+                    </section>
+
+                    <!-- PÁGINA 9 -->
+                    <section class="pdf-page" id="pagina-9">
+                        <span class="page-indicator">Pág. 9 / 9</span>
+                        <div class="page-header-title">OUBO — Cierre y Compromiso</div>
+                        <div class="page-content">
+                            <p style="font-size: 0.8rem;">La correcta aplicación de las directrices de este manual es
+                                clave para construir una presencia sólida, profesional y reconocible en cada punto de
+                                contacto[cite: 9].</p>
+                            <p style="font-size: 0.8rem;"><strong>Compromiso:</strong> Es responsabilidad de todos
+                                proteger y fortalecer la percepción de nuestra marca[cite: 9].</p>
+                            <p style="font-size: 0.8rem;"><strong>Documento vivo:</strong> Este manual evoluciona junto
+                                con la marca; consúltalo periódicamente para mantener la consistencia[cite: 9].</p>
+                        </div>
+                        <div style="font-size: 0.7rem; color: rgba(255,255,255,0.4);">Manual de Marca Oficial</div>
+                    </section>
+
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5.3 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebarMenu = document.getElementById('sidebarMenu');
+            const navLinks = sidebarMenu.querySelectorAll('.nav-link');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function () {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+
+                    if (window.innerWidth < 768) {
+                        const bsOffcanvas = bootstrap.Offcanvas.getInstance(sidebarMenu);
+                        if (bsOffcanvas) {
+                            bsOffcanvas.hide();
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -37,19 +37,63 @@
             box-sizing: border-box;
         }
 
+        html,
         body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg-main);
             color: var(--text-main);
-            line-height: 1.5;
-            min-height: 100vh;
         }
 
-        /* --- SIDEBAR HOMOLOGADO --- */
+        /* --- SIDEBAR DRAWER PARA ESCRITORIO Y MÓVIL --- */
+        @media (min-width: 768px) {
+            .sidebar.offcanvas-md {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 260px;
+                transform: none;
+                visibility: visible !important;
+                background-color: var(--bg-card);
+                border-right: 1px solid var(--border-color);
+                z-index: 1040;
+                overflow-y: auto;
+            }
+        }
+
         .sidebar {
             background-color: var(--bg-card);
             border-right: 1px solid var(--border-color);
-            min-height: 100vh;
+        }
+
+        /* --- HEADER FIJO --- */
+        .app-header-fixed {
+            position: sticky;
+            top: 0;
+            background-color: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1030;
+            padding: 0.75rem 1.5rem;
+        }
+
+        /* --- CONTENEDOR PRINCIPAL CON SCROLL INDEPENDIENTE Y COMPENSACIÓN DE ANCLAJES --- */
+        main.ms-md-auto {
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            padding: 0 !important;
+            /* Evita que el header fijo cubra los títulos al hacer clic en los enlaces del menú */
+            scroll-padding-top: 5rem;
+        }
+
+        .content-body {
+            padding: 2rem;
+            flex: 1;
         }
 
         .brand {
@@ -109,7 +153,7 @@
             color: var(--text-main);
         }
 
-        /* --- HEADER PRINCIPAL --- */
+        /* --- HEADER PRINCIPAL DE DOCUMENTACIÓN --- */
         .header-doc {
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 1.5rem;
@@ -334,221 +378,230 @@
     <div class="container-fluid">
         <div class="row">
 
-            <!-- SIDEBAR RESPONSIVO HOMOLOGADO -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar p-3 collapse" id="sidebarMenu">
-                <div class="position-sticky pt-3">
-                    <div class="brand">
-                        <div class="brand-logo"></div>
-                        <span class="brand-title">Cubo Conecta</span>
-                    </div>
+            <!-- SIDEBAR DRAWER (OFFCANVAS EN MÓVIL, FIJO EN ESCRITORIO) -->
+            <nav class="offcanvas-md offcanvas-start sidebar p-3" tabindex="-1" id="sidebarMenu"
+                aria-labelledby="sidebarMenuLabel">
+                <div class="offcanvas-header d-md-none pb-2 pt-0 px-0">
+                    <h5 class="offcanvas-title text-white" id="sidebarMenuLabel" style="font-size: 1rem;">Navegación
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                        data-bs-target="#sidebarMenu" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body p-0 flex-column">
+                    <div class="pt-1 w-100">
+                        <div class="brand">
+                            <div class="brand-logo"></div>
+                            <span class="brand-title">Cubo Conecta</span>
+                        </div>
 
-                    <div class="mb-3">
-                        <span class="d-block text-uppercase mb-2"
-                            style="font-size: 0.75rem; letter-spacing: 0.05em; color: var(--text-muted);">Navegación</span>
-                        <ul class="nav flex-column gap-1">
-                            <li class="nav-item"><a class="nav-link py-1 px-2" href="index.html">🏠 Inicio</a></li>
-                            <li class="nav-item"><a class="nav-link py-1 px-2" href="search.service.html">🔍 Search
-                                    Service</a></li>
-                            <li class="nav-item"><a class="nav-link py-1 px-2 active" href="chat.service.html">💬 Chat
-                                    Service</a></li>
-                        </ul>
-                    </div>
+                        <div class="mb-3">
+                            <span class="d-block text-uppercase mb-2"
+                                style="font-size: 0.75rem; letter-spacing: 0.05em; color: var(--text-muted);">Navegación</span>
+                            <ul class="nav flex-column gap-1">
+                                <li class="nav-item"><a class="nav-link py-1 px-2" href="index.html">🏠 Inicio</a></li>
+                                <li class="nav-item"><a class="nav-link py-1 px-2" href="search.service.html">🔍 Search
+                                        Service</a></li>
+                                <li class="nav-item"><a class="nav-link py-1 px-2 active" href="chat.service.html">💬
+                                        Chat Service</a></li>
+                            </ul>
+                        </div>
 
-                    <div class="nav-group mt-4">
-                        <div class="nav-title">General</div>
-                        <ul class="nav-list">
-                            <li class="nav-item"><a href="#resumen">Arquitectura</a></li>
-                        </ul>
-                    </div>
+                        <div class="nav-group mt-4">
+                            <div class="nav-title">General</div>
+                            <ul class="nav-list">
+                                <li class="nav-item"><a href="#resumen">Arquitectura</a></li>
+                            </ul>
+                        </div>
 
-                    <div class="nav-group">
-                        <div class="nav-title">Acciones (Command/Response)</div>
-                        <ul class="nav-list">
-                            <li class="nav-item"><a href="#chat-get-chat-list">chat.get_chat_list</a></li>
-                            <li class="nav-item"><a href="#chat-get-chat-messages">chat.get_chat_messages</a></li>
-                            <li class="nav-item"><a href="#chat-send-message">chat.send_message</a></li>
-                            <li class="nav-item"><a href="#chat-mark-message-delivered">chat.mark_message_delivered</a>
-                            </li>
-                            <li class="nav-item"><a href="#chat-mark-message-read">chat.mark_message_read</a></li>
-                            <li class="nav-item"><a href="#chat-edit-message">chat.edit_message</a></li>
-                            <li class="nav-item"><a href="#chat-delete-messages">chat.delete_messages</a></li>
-                            <li class="nav-item"><a href="#chat-delete-chats">chat.delete_chats</a></li>
-                            <li class="nav-item"><a href="#chat-typing-action">chat.start / stop_typing</a></li>
-                        </ul>
-                    </div>
+                        <div class="nav-group">
+                            <div class="nav-title">Acciones (Command/Response)</div>
+                            <ul class="nav-list">
+                                <li class="nav-item"><a href="#chat-get-chat-list">chat.get_chat_list</a></li>
+                                <li class="nav-item"><a href="#chat-get-chat-messages">chat.get_chat_messages</a></li>
+                                <li class="nav-item"><a href="#chat-send-message">chat.send_message</a></li>
+                                <li class="nav-item"><a
+                                        href="#chat-mark-message-delivered">chat.mark_message_delivered</a></li>
+                                <li class="nav-item"><a href="#chat-mark-message-read">chat.mark_message_read</a></li>
+                                <li class="nav-item"><a href="#chat-edit-message">chat.edit_message</a></li>
+                                <li class="nav-item"><a href="#chat-delete-messages">chat.delete_messages</a></li>
+                                <li class="nav-item"><a href="#chat-delete-chats">chat.delete_chats</a></li>
+                                <li class="nav-item"><a href="#chat-typing-action">chat.start / stop_typing</a></li>
+                            </ul>
+                        </div>
 
-                    <div class="nav-group">
-                        <div class="nav-title">Streams en Tiempo Real</div>
-                        <ul class="nav-list">
-                            <li class="nav-item"><a href="#stream-chat-message">chat.message</a></li>
-                            <li class="nav-item"><a href="#stream-message-status">chat.message_status</a></li>
-                            <li class="nav-item"><a href="#stream-typing-status">chat.typing_status</a></li>
-                        </ul>
-                    </div>
+                        <div class="nav-group">
+                            <div class="nav-title">Streams en Tiempo Real</div>
+                            <ul class="nav-list">
+                                <li class="nav-item"><a href="#stream-chat-message">chat.message</a></li>
+                                <li class="nav-item"><a href="#stream-message-status">chat.message_status</a></li>
+                                <li class="nav-item"><a href="#stream-typing-status">chat.typing_status</a></li>
+                            </ul>
+                        </div>
 
-                    <div class="nav-group">
-                        <div class="nav-title">Eventos de Presencia</div>
-                        <ul class="nav-list">
-                            <li class="nav-item"><a href="#presence-snapshot">presence.snapshot</a></li>
-                            <li class="nav-item"><a href="#presence-watch">presence.watch</a></li>
-                        </ul>
+                        <div class="nav-group">
+                            <div class="nav-title">Eventos de Presencia</div>
+                            <ul class="nav-list">
+                                <li class="nav-item"><a href="#presence-snapshot">presence.snapshot</a></li>
+                                <li class="nav-item"><a href="#presence-watch">presence.watch</a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </nav>
 
             <!-- MAIN CONTENT CONTAINER -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            <main class="col-12 col-md-9 ms-md-auto col-lg-10">
 
-                <!-- Botón menú móvil -->
-                <div class="d-md-none mb-4">
-                    <button class="btn btn-outline-light btn-sm" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
-                        aria-label="Toggle navigation">
-                        ☰ Menú de Navegación
-                    </button>
-                </div>
-
-                <!-- HEADER -->
-                <header class="header-doc">
-                    <h1>Especificación WebSocket Chat API</h1>
-                    <p>Documentación técnica de eventos, comandos y respuestas en tiempo real.</p>
-                    <div class="tech-stack">
-                        <span class="tech-pill">Go Backend</span>
-                        <span class="tech-pill">Socket.IO / WebSockets</span>
-                        <span class="tech-pill">v2.0 Consolidada</span>
+                <!-- HEADER FIJO SUPERIOR -->
+                <header class="app-header-fixed d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-3">
+                        <!-- Botón menú móvil drawer -->
+                        <button class="btn btn-outline-light btn-sm d-md-none" type="button" data-bs-toggle="offcanvas"
+                            data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-label="Toggle navigation">
+                            ☰
+                        </button>
+                        <h2 class="h5 m-0 text-white font-monospace">Chat & WebSockets Service</h2>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span
+                            class="badge bg-primary bg-opacity-15 text-primary border border-primary border-opacity-25 px-2 py-1">v2.0</span>
                     </div>
                 </header>
 
-                <!-- ARCHITECTURE SUMMARY -->
-                <section id="resumen">
-                    <h2>Resumen de Arquitectura de Eventos</h2>
-                    <div class="table-container">
-                        <div class="table-responsive">
-                            <table class="table-custom">
-                                <thead>
-                                    <tr>
-                                        <th>Acción Emitida (Cliente)</th>
-                                        <th>Mecanismo / Evento de Respuesta</th>
-                                        <th>Alcance / Receptor</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><code>chat.get_chat_list</code></td>
-                                        <td>Evento <code>"response"</code> (<code>GetChatListResponse</code>)</td>
-                                        <td>Cliente Emisor (Solicitante)</td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>chat.get_chat_messages</code></td>
-                                        <td>Evento <code>"response"</code> (<code>GetChatMessagesResponse</code>)</td>
-                                        <td>Cliente Emisor (Solicitante)</td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>chat.send_message</code></td>
-                                        <td>Evento <code>"response"</code> (ACK) + Evento <code>"chat.message"</code>
-                                        </td>
-                                        <td>Emisor (ACK) y Destinatario (<code>target_user_id</code>)</td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>chat.mark_message_delivered</code></td>
-                                        <td>Evento <code>"response"</code> (<code>MarkMessagesResponse</code>) + Evento
-                                            <code>"chat.message_status"</code>
-                                        </td>
-                                        <td>Receptor confirma entrega (ACK); Remitente original
-                                            (<code>target_user_id</code>) recibe cambio a
-                                            <code>DELIVERED</code>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>chat.mark_message_read</code></td>
-                                        <td>Evento <code>"response"</code> (<code>MarkMessagesResponse</code>) + Evento
-                                            <code>"chat.message_status"</code>
-                                        </td>
-                                        <td>Receptor confirma lectura (ACK); Remitente original
-                                            (<code>target_user_id</code>) recibe cambio a
-                                            <code>READ</code>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>chat.edit_message</code></td>
-                                        <td>Evento <code>"response"</code> (<code>ChatMessageResponse</code>) + Evento
-                                            <code>"chat.message"</code>
-                                        </td>
-                                        <td>Cliente Emisor y Destinatario (<code>target_user_id</code>)</td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>chat.delete_messages</code></td>
-                                        <td>Evento <code>"response"</code> (<code>DeleteMessagesResponse</code>) +
-                                            Evento
-                                            <code>"chat.message"</code>
-                                        </td>
-                                        <td>Cliente Emisor y Destinatario (si <code>delete_for_everyone</code>)</td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>chat.delete_chats</code></td>
-                                        <td>Evento <code>"response"</code> (<code>DeleteChatsResponse</code>)</td>
-                                        <td>Cliente Emisor (Solicitante)</td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>chat.start_typing</code> / <code>chat.stop_typing</code></td>
-                                        <td>Evento <code>"response"</code> (<code>ChatResponse</code>) + Evento
-                                            <code>"chat.typing_status"</code>
-                                        </td>
-                                        <td>Cliente Emisor (ACK) y únicamente al <code>target_user_id</code></td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>presence.snapshot</code></td>
-                                        <td>Evento <code>"presence.snapshot"</code></td>
-                                        <td>Cliente Solicitante</td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>presence.watch</code></td>
-                                        <td>Suscripción pasiva (Eventos <code>"presence.update"</code>)</td>
-                                        <td>Cliente Solicitante</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                <!-- CUERPO DE DOCUMENTACIÓN -->
+                <div class="content-body">
+
+                    <div class="header-doc">
+                        <h1>Especificación WebSocket Chat API</h1>
+                        <p>Documentación técnica de eventos, comandos y respuestas en tiempo real.</p>
+                        <div class="tech-stack">
+                            <span class="tech-pill">Go Backend</span>
+                            <span class="tech-pill">Socket.IO / WebSockets</span>
+                            <span class="tech-pill">v2.0 Consolidada</span>
                         </div>
                     </div>
-                </section>
 
-                <!-- SECTION 1: PETICIONES Y RESPUESTAS -->
-                <section id="peticiones">
-                    <h2>1. PETICIONES Y RESPUESTAS (EVENTO "response")</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
-                        Estas acciones se envían mediante <code>socket.emit(evento, data)</code> y el servidor devuelve
-                        su resultado
-                        emitiendo el evento global <code>socket.on("response", ...)</code>.
-                    </p>
-
-                    <!-- 1.1 GET CHAT LIST -->
-                    <article class="endpoint-card" id="chat-get-chat-list">
-                        <div class="endpoint-header">
-                            <div class="endpoint-title">
-                                <span class="badge-custom badge-emit">EMIT</span>
-                                <h3>chat.get_chat_list</h3>
+                    <!-- ARCHITECTURE SUMMARY -->
+                    <section id="resumen">
+                        <h2>Resumen de Arquitectura de Eventos</h2>
+                        <div class="table-container">
+                            <div class="table-responsive">
+                                <table class="table-custom">
+                                    <thead>
+                                        <tr>
+                                            <th>Acción Emitida (Cliente)</th>
+                                            <th>Mecanismo / Evento de Respuesta</th>
+                                            <th>Alcance / Receptor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>chat.get_chat_list</code></td>
+                                            <td>Evento <code>"response"</code> (<code>GetChatListResponse</code>)</td>
+                                            <td>Cliente Emisor (Solicitante)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>chat.get_chat_messages</code></td>
+                                            <td>Evento <code>"response"</code> (<code>GetChatMessagesResponse</code>)
+                                            </td>
+                                            <td>Cliente Emisor (Solicitante)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>chat.send_message</code></td>
+                                            <td>Evento <code>"response"</code> (ACK) + Evento
+                                                <code>"chat.message"</code></td>
+                                            <td>Emisor (ACK) y Destinatario (<code>target_user_id</code>)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>chat.mark_message_delivered</code></td>
+                                            <td>Evento <code>"response"</code> (<code>MarkMessagesResponse</code>) +
+                                                Evento <code>"chat.message_status"</code></td>
+                                            <td>Receptor confirma entrega (ACK); Remitente original
+                                                (<code>target_user_id</code>) recibe cambio a <code>DELIVERED</code>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>chat.mark_message_read</code></td>
+                                            <td>Evento <code>"response"</code> (<code>MarkMessagesResponse</code>) +
+                                                Evento <code>"chat.message_status"</code></td>
+                                            <td>Receptor confirma lectura (ACK); Remitente original
+                                                (<code>target_user_id</code>) recibe cambio a <code>READ</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>chat.edit_message</code></td>
+                                            <td>Evento <code>"response"</code> (<code>ChatMessageResponse</code>) +
+                                                Evento <code>"chat.message"</code></td>
+                                            <td>Cliente Emisor y Destinatario (<code>target_user_id</code>)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>chat.delete_messages</code></td>
+                                            <td>Evento <code>"response"</code> (<code>DeleteMessagesResponse</code>) +
+                                                Evento <code>"chat.message"</code></td>
+                                            <td>Cliente Emisor y Destinatario (si <code>delete_for_everyone</code>)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>chat.delete_chats</code></td>
+                                            <td>Evento <code>"response"</code> (<code>DeleteChatsResponse</code>)</td>
+                                            <td>Cliente Emisor (Solicitante)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>chat.start_typing</code> / <code>chat.stop_typing</code></td>
+                                            <td>Evento <code>"response"</code> (<code>ChatResponse</code>) + Evento
+                                                <code>"chat.typing_status"</code></td>
+                                            <td>Cliente Emisor (ACK) y únicamente al <code>target_user_id</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>presence.snapshot</code></td>
+                                            <td>Evento <code>"presence.snapshot"</code></td>
+                                            <td>Cliente Solicitante</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>presence.watch</code></td>
+                                            <td>Suscripción pasiva (Eventos <code>"presence.update"</code>)</td>
+                                            <td>Cliente Solicitante</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-                        <div class="endpoint-body">
-                            <p style="color: var(--text-muted);">Obtiene la lista resumida de conversaciones activas del
-                                usuario.</p>
-                            <div class="row g-3 mt-1">
-                                <div class="col-12 col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span>
-                                        </div>
-                                        <pre><code>{
+                    </section>
+
+                    <!-- SECTION 1: PETICIONES Y RESPUESTAS -->
+                    <section id="peticiones">
+                        <h2>1. PETICIONES Y RESPUESTAS (EVENTO "response")</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                            Estas acciones se envían mediante <code>socket.emit(evento, data)</code> y el servidor
+                            devuelve su resultado emitiendo el evento global <code>socket.on("response", ...)</code>.
+                        </p>
+
+                        <!-- 1.1 GET CHAT LIST -->
+                        <article class="endpoint-card" id="chat-get-chat-list">
+                            <div class="endpoint-header">
+                                <div class="endpoint-title">
+                                    <span class="badge-custom badge-emit">EMIT</span>
+                                    <h3>chat.get_chat_list</h3>
+                                </div>
+                            </div>
+                            <div class="endpoint-body">
+                                <p style="color: var(--text-muted);">Obtiene la lista resumida de conversaciones activas
+                                    del usuario.</p>
+                                <div class="row g-3 mt-1">
+                                    <div class="col-12 col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header"><span>1. Emisión del
+                                                    Cliente</span><span>JSON</span></div>
+                                            <pre><code>{
   "user_id": "672800e46f4b3358a701fa9c",
   "before_chat_id": "",
   "limit": 10
 }</code></pre>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-12 col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header"><span>2. Respuesta del Servidor
-                                                (socket.on("response"))</span><span>JSON</span></div>
-                                        <pre><code>{
+                                    <div class="col-12 col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header"><span>2. Respuesta del Servidor
+                                                    (socket.on("response"))</span><span>JSON</span></div>
+                                            <pre><code>{
   "type": "response",
   "payload": {
     "chats": [
@@ -574,41 +627,41 @@
     "has_more": false
   }
 }</code></pre>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </article>
+                        </article>
 
-                    <!-- 1.2 GET CHAT MESSAGES -->
-                    <article class="endpoint-card" id="chat-get-chat-messages">
-                        <div class="endpoint-header">
-                            <div class="endpoint-title">
-                                <span class="badge-custom badge-emit">EMIT</span>
-                                <h3>chat.get_chat_messages</h3>
+                        <!-- 1.2 GET CHAT MESSAGES -->
+                        <article class="endpoint-card" id="chat-get-chat-messages">
+                            <div class="endpoint-header">
+                                <div class="endpoint-title">
+                                    <span class="badge-custom badge-emit">EMIT</span>
+                                    <h3>chat.get_chat_messages</h3>
+                                </div>
                             </div>
-                        </div>
-                        <div class="endpoint-body">
-                            <p style="color: var(--text-muted);">Obtiene el historial detallado de mensajes de una
-                                conversación específica.</p>
-                            <div class="row g-3 mt-1">
-                                <div class="col-12 col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span>
-                                        </div>
-                                        <pre><code>{
+                            <div class="endpoint-body">
+                                <p style="color: var(--text-muted);">Obtiene el historial detallado de mensajes de una
+                                    conversación específica.</p>
+                                <div class="row g-3 mt-1">
+                                    <div class="col-12 col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header"><span>1. Emisión del
+                                                    Cliente</span><span>JSON</span></div>
+                                            <pre><code>{
   "chat_id": "6a022c0a50bf64cf1674e287",
   "user_id": "672800e46f4b3358a701fa9c",
   "before_message_id": "",
   "limit": 20
 }</code></pre>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-12 col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header"><span>2. Respuesta del Servidor
-                                                (socket.on("response"))</span><span>JSON</span></div>
-                                        <pre><code>{
+                                    <div class="col-12 col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header"><span>2. Respuesta del Servidor
+                                                    (socket.on("response"))</span><span>JSON</span></div>
+                                            <pre><code>{
   "type": "response",
   "payload": {
     "messages": [
@@ -650,32 +703,31 @@
     "has_more": false
   }
 }</code></pre>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </article>
+                        </article>
 
-                    <!-- 1.3 SEND MESSAGE -->
-                    <article class="endpoint-card" id="chat-send-message">
-                        <div class="endpoint-header">
-                            <div class="endpoint-title">
-                                <span class="badge-custom badge-emit">EMIT</span>
-                                <h3>chat.send_message</h3>
+                        <!-- 1.3 SEND MESSAGE -->
+                        <article class="endpoint-card" id="chat-send-message">
+                            <div class="endpoint-header">
+                                <div class="endpoint-title">
+                                    <span class="badge-custom badge-emit">EMIT</span>
+                                    <h3>chat.send_message</h3>
+                                </div>
                             </div>
-                        </div>
-                        <div class="endpoint-body">
-                            <p style="color: var(--text-muted);">Envía un nuevo mensaje. El emisor recibe la
-                                confirmación formal por <code>"response"</code>, y si se envía
-                                <code>target_user_id</code> se retransmite directamente al destinatario mediante
-                                <code>"chat.message"</code>.
-                            </p>
-                            <div class="row g-3 mt-1">
-                                <div class="col-12 col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span>
-                                        </div>
-                                        <pre><code>{
+                            <div class="endpoint-body">
+                                <p style="color: var(--text-muted);">Envía un nuevo mensaje. El emisor recibe la
+                                    confirmación formal por <code>"response"</code>, y si se envía
+                                    <code>target_user_id</code> se retransmite directamente al destinatario mediante
+                                    <code>"chat.message"</code>.</p>
+                                <div class="row g-3 mt-1">
+                                    <div class="col-12 col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header"><span>1. Emisión del
+                                                    Cliente</span><span>JSON</span></div>
+                                            <pre><code>{
   "chat_id": "6a022c0a50bf64cf1674e287",
   "user_id": "672800e46f4b3358a701fa9c",
   "target_user_id": "6727ea0d6f4b3358a701dd7d",
@@ -694,13 +746,13 @@
   "temp_id": "aTHiJM93SriZUjZ0EOzx9",
   "status": "SENT"
 }</code></pre>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-12 col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header"><span>2. Respuesta al Emisor
-                                                (socket.on("response"))</span><span>JSON</span></div>
-                                        <pre><code>{
+                                    <div class="col-12 col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header"><span>2. Respuesta al Emisor
+                                                    (socket.on("response"))</span><span>JSON</span></div>
+                                            <pre><code>{
   "type": "response",
   "payload": {
     "id": "67a1b2c3d4e5f67890123457",
@@ -737,30 +789,30 @@
     "status": "SENT"
   }
 }</code></pre>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </article>
+                        </article>
 
-                    <!-- 1.4 MARK MESSAGES DELIVERED -->
-                    <article class="endpoint-card" id="chat-mark-message-delivered">
-                        <div class="endpoint-header">
-                            <div class="endpoint-title">
-                                <span class="badge-custom badge-emit">EMIT</span>
-                                <h3>chat.mark_message_delivered</h3>
+                        <!-- 1.4 MARK MESSAGES DELIVERED -->
+                        <article class="endpoint-card" id="chat-mark-message-delivered">
+                            <div class="endpoint-header">
+                                <div class="endpoint-title">
+                                    <span class="badge-custom badge-emit">EMIT</span>
+                                    <h3>chat.mark_message_delivered</h3>
+                                </div>
                             </div>
-                        </div>
-                        <div class="endpoint-body">
-                            <p style="color: var(--text-muted);">Notifica que uno o más mensajes han sido entregados
-                                exitosamente al dispositivo receptor. Se incluye <code>target_user_id</code> para
-                                propagar la actualización de estado al remitente original.</p>
-                            <div class="row g-3 mt-1">
-                                <div class="col-12 col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span>
-                                        </div>
-                                        <pre><code>{
+                            <div class="endpoint-body">
+                                <p style="color: var(--text-muted);">Notifica que uno o más mensajes han sido entregados
+                                    exitosamente al dispositivo receptor. Se incluye <code>target_user_id</code> para
+                                    propagar la actualización de estado al remitente original.</p>
+                                <div class="row g-3 mt-1">
+                                    <div class="col-12 col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header"><span>1. Emisión del
+                                                    Cliente</span><span>JSON</span></div>
+                                            <pre><code>{
   "chat_id": "6a022c0a50bf64cf1674e287",
   "user_id": "6727ea0d6f4b3358a701dd7d",
   "message_ids": [
@@ -769,13 +821,13 @@
   "device_id": "dev_mobile_01",
   "target_user_id": "672800e46f4b3358a701fa9c"
 }</code></pre>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-12 col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header"><span>2. Respuesta del Servidor
-                                                (socket.on("response"))</span><span>JSON</span></div>
-                                        <pre><code>{
+                                    <div class="col-12 col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header"><span>2. Respuesta del Servidor
+                                                    (socket.on("response"))</span><span>JSON</span></div>
+                                            <pre><code>{
   "type": "response",
   "payload": {
     "success": true,
@@ -794,30 +846,30 @@
     }
   }
 }</code></pre>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </article>
+                        </article>
 
-                    <!-- 1.5 MARK MESSAGES READ -->
-                    <article class="endpoint-card" id="chat-mark-message-read">
-                        <div class="endpoint-header">
-                            <div class="endpoint-title">
-                                <span class="badge-custom badge-emit">EMIT</span>
-                                <h3>chat.mark_message_read</h3>
+                        <!-- 1.5 MARK MESSAGES READ -->
+                        <article class="endpoint-card" id="chat-mark-message-read">
+                            <div class="endpoint-header">
+                                <div class="endpoint-title">
+                                    <span class="badge-custom badge-emit">EMIT</span>
+                                    <h3>chat.mark_message_read</h3>
+                                </div>
                             </div>
-                        </div>
-                        <div class="endpoint-body">
-                            <p style="color: var(--text-muted);">Notifica que uno o más mensajes han sido leídos por el
-                                receptor. Se incluye <code>target_user_id</code> para propagar la actualización de
-                                estado al remitente original.</p>
-                            <div class="row g-3 mt-1">
-                                <div class="col-12 col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span>
-                                        </div>
-                                        <pre><code>{
+                            <div class="endpoint-body">
+                                <p style="color: var(--text-muted);">Notifica que uno o más mensajes han sido leídos por
+                                    el receptor. Se incluye <code>target_user_id</code> para propagar la actualización
+                                    de estado al remitente original.</p>
+                                <div class="row g-3 mt-1">
+                                    <div class="col-12 col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header"><span>1. Emisión del
+                                                    Cliente</span><span>JSON</span></div>
+                                            <pre><code>{
   "chat_id": "6a022c0a50bf64cf1674e287",
   "user_id": "6727ea0d6f4b3358a701dd7d",
   "message_ids": [
@@ -825,13 +877,13 @@
   ],
   "target_user_id": "672800e46f4b3358a701fa9c"
 }</code></pre>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-12 col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header"><span>2. Respuesta del Servidor
-                                                (socket.on("response"))</span><span>JSON</span></div>
-                                        <pre><code>{
+                                    <div class="col-12 col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header"><span>2. Respuesta del Servidor
+                                                    (socket.on("response"))</span><span>JSON</span></div>
+                                            <pre><code>{
   "type": "response",
   "payload": {
     "success": true,
@@ -850,53 +902,53 @@
     }
   }
 }</code></pre>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </article>
+                        </article>
 
-                    <!-- 1.6 EDIT MESSAGE -->
-                    <article class="endpoint-card" id="chat-edit-message">
-                        <div class="endpoint-header">
-                            <div class="endpoint-title">
-                                <span class="badge-custom badge-emit">EMIT</span>
-                                <h3>chat.edit_message</h3>
-                            </div>
-                        </div>
-                        <div class="endpoint-body">
-                            <p style="color: var(--text-muted);">Edita el contenido de un mensaje existente, siempre y
-                                cuando no hayan transcurrido más de 3 minutos desde su creación. Devuelve la entidad
-                                actualizada dentro del payload con los sellos de tiempo en formato Protobuf Timestamp
-                                (<code>seconds</code> y <code>nanos</code>).</p>
-
-                            <div class="callout callout-warning">
-                                <span class="callout-icon">⚠️</span>
-                                <div>
-                                    <strong>Restricción:</strong> Solo se permite editar un mensaje dentro de los
-                                    primeros <strong>3 minutos (180 segundos)</strong> posteriores a su envío
-                                    (<code>created_at</code>). Si se intenta editar después de este lapso, el servidor
-                                    rechazará la solicitud devolviendo un error.
+                        <!-- 1.6 EDIT MESSAGE -->
+                        <article class="endpoint-card" id="chat-edit-message">
+                            <div class="endpoint-header">
+                                <div class="endpoint-title">
+                                    <span class="badge-custom badge-emit">EMIT</span>
+                                    <h3>chat.edit_message</h3>
                                 </div>
                             </div>
+                            <div class="endpoint-body">
+                                <p style="color: var(--text-muted);">Edita el contenido de un mensaje existente, siempre
+                                    y cuando no hayan transcurrido más de 3 minutos desde su creación. Devuelve la
+                                    entidad actualizada dentro del payload con los sellos de tiempo en formato Protobuf
+                                    Timestamp (<code>seconds</code> y <code>nanos</code>).</p>
 
-                            <div class="row g-3 mt-1">
-                                <div class="col-12 col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span>
-                                        </div>
-                                        <pre><code>{
+                                <div class="callout callout-warning">
+                                    <span class="callout-icon">⚠️</span>
+                                    <div>
+                                        <strong>Restricción:</strong> Solo se permite editar un mensaje dentro de los
+                                        primeros <strong>3 minutos (180 segundos)</strong> posteriores a su envío
+                                        (<code>created_at</code>). Si se intenta editar después de este lapso, el
+                                        servidor rechazará la solicitud devolviendo un error.
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mt-1">
+                                    <div class="col-12 col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header"><span>1. Emisión del
+                                                    Cliente</span><span>JSON</span></div>
+                                            <pre><code>{
   "message_id": "6a6145b055502227402bc597",
   "new_message": "Hola, este es un mensaje de prueba-Actualiza2",
   "target_user_id": "6727ea0d6f4b3358a701dd7d"
 }</code></pre>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-12 col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header"><span>2. Respuesta del Servidor
-                                                (socket.on("response"))</span><span>JSON</span></div>
-                                        <pre><code>{
+                                    <div class="col-12 col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header"><span>2. Respuesta del Servidor
+                                                    (socket.on("response"))</span><span>JSON</span></div>
+                                            <pre><code>{
   "type": "response",
   "payload": {
     "id": "6a6145b055502227402bc597",
@@ -939,43 +991,43 @@
     "status": "SENT"
   }
 }</code></pre>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </article>
+                        </article>
 
-                    <!-- 1.7 DELETE MESSAGES -->
-                    <article class="endpoint-card" id="chat-delete-messages">
-                        <div class="endpoint-header">
-                            <div class="endpoint-title">
-                                <span class="badge-custom badge-emit">EMIT</span>
-                                <h3>chat.delete_messages</h3>
-                            </div>
-                        </div>
-                        <div class="endpoint-body">
-                            <p style="color: var(--text-muted);">Elimina uno o varios mensajes (acepta un arreglo de
-                                IDs). Si <code>delete_for_everyone</code> es <code>true</code>, elimina los mensajes
-                                para todos los miembros del chat (válido únicamente dentro de los primeros 10 minutos
-                                desde su envío). Si es <code>false</code>, solo se ocultan para el usuario que realiza
-                                la petición.</p>
-
-                            <div class="callout callout-warning">
-                                <span class="callout-icon">⚠️</span>
-                                <div>
-                                    <strong>Restricción:</strong> Solo se permite eliminar un mensaje para todos dentro
-                                    de los primeros <strong>10 minutos (600 segundos)</strong> posteriores a su envío
-                                    (<code>created_at</code>). Si se intenta eliminar después de este lapso, el servidor
-                                    rechazará la solicitud devolviendo un error.
+                        <!-- 1.7 DELETE MESSAGES -->
+                        <article class="endpoint-card" id="chat-delete-messages">
+                            <div class="endpoint-header">
+                                <div class="endpoint-title">
+                                    <span class="badge-custom badge-emit">EMIT</span>
+                                    <h3>chat.delete_messages</h3>
                                 </div>
                             </div>
+                            <div class="endpoint-body">
+                                <p style="color: var(--text-muted);">Elimina uno o varios mensajes (acepta un arreglo de
+                                    IDs). Si <code>delete_for_everyone</code> es <code>true</code>, elimina los mensajes
+                                    para todos los miembros del chat (válido únicamente dentro de los primeros 10
+                                    minutos desde su envío). Si es <code>false</code>, solo se ocultan para el usuario
+                                    que realiza la petición.</p>
 
-                            <div class="row g-3 mt-1">
-                                <div class="col-12 col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span>
-                                        </div>
-                                        <pre><code>{
+                                <div class="callout callout-warning">
+                                    <span class="callout-icon">⚠️</span>
+                                    <div>
+                                        <strong>Restricción:</strong> Solo se permite eliminar un mensaje para todos
+                                        dentro de los primeros <strong>10 minutos (600 segundos)</strong> posteriores a
+                                        su envío (<code>created_at</code>). Si se intenta eliminar después de este
+                                        lapso, el servidor rechazará la solicitud devolviendo un error.
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mt-1">
+                                    <div class="col-12 col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header"><span>1. Emisión del
+                                                    Cliente</span><span>JSON</span></div>
+                                            <pre><code>{
   "chat_id": "6a022c0a50bf64cf1674e287",
   "user_id": "672800e46f4b3358a701fa9c",
   "target_user_id": "6727ea0d6f4b3358a701dd7d",
@@ -985,13 +1037,13 @@
   ],
   "delete_for_everyone": true
 }</code></pre>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-12 col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header"><span>2. Respuesta del Servidor
-                                                (socket.on("response"))</span><span>JSON</span></div>
-                                        <pre><code>{
+                                    <div class="col-12 col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header"><span>2. Respuesta del Servidor
+                                                    (socket.on("response"))</span><span>JSON</span></div>
+                                            <pre><code>{
   "type": "response",
   "payload": {
     "success": true,
@@ -1002,29 +1054,30 @@
     ]
   }
 }</code></pre>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </article>
+                        </article>
 
-                    <!-- 1.8 DELETE CHATS -->
-                    <article class="endpoint-card" id="chat-delete-chats">
-                        <div class="endpoint-header">
-                            <div class="endpoint-title">
-                                <span class="badge-custom badge-emit">EMIT</span>
-                                <h3>chat.delete_chats</h3>
+                        <!-- 1.8 DELETE CHATS -->
+                        <article class="endpoint-card" id="chat-delete-chats">
+                            <div class="endpoint-header">
+                                <div class="endpoint-title">
+                                    <span class="badge-custom badge-emit">EMIT</span>
+                                    <h3>chat.delete_chats</h3>
+                                </div>
                             </div>
-                        </div>
-                        <div class="endpoint-body">
-                            <p style="color: var(--text-muted);">Elimina uno o varios chats (acepta un arreglo de IDs)
-                                para el usuario actual, con opción de eliminar para todos los participantes.</p>
-                            <div class="row g-3 mt-1">
-                                <div class="col-12 col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header"><span>1. Emisión del Cliente</span><span>JSON</span>
-                                        </div>
-                                        <pre><code>{
+                            <div class="endpoint-body">
+                                <p style="color: var(--text-muted);">Elimina uno o varios chats (acepta un arreglo de
+                                    IDs) para el usuario actual, con opción de eliminar para todos los participantes.
+                                </p>
+                                <div class="row g-3 mt-1">
+                                    <div class="col-12 col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header"><span>1. Emisión del
+                                                    Cliente</span><span>JSON</span></div>
+                                            <pre><code>{
   "user_id": "672800e46f4b3358a701fa9d",
   "chat_ids": [
     "6a022c0a50bf64cf1674e287",
@@ -1032,13 +1085,13 @@
   ],
   "delete_for_everyone": false
 }</code></pre>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-12 col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header"><span>2. Respuesta del Servidor
-                                                (socket.on("response"))</span><span>JSON</span></div>
-                                        <pre><code>{
+                                    <div class="col-12 col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header"><span>2. Respuesta del Servidor
+                                                    (socket.on("response"))</span><span>JSON</span></div>
+                                            <pre><code>{
   "type": "response",
   "payload": {
     "success": true,
@@ -1049,57 +1102,56 @@
     ]
   }
 }</code></pre>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </article>
+                        </article>
 
-                    <!-- 1.9 TYPING ACTIONS -->
-                    <article class="endpoint-card" id="chat-typing-action">
-                        <div class="endpoint-header">
-                            <div class="endpoint-title">
-                                <span class="badge-custom badge-emit">EMIT</span>
-                                <h3>chat.start_typing / chat.stop_typing</h3>
-                            </div>
-                        </div>
-                        <div class="endpoint-body">
-                            <p style="color: var(--text-muted);">Notifica el estado de escritura del usuario hacia el
-                                <code>target_user_id</code>.
-                            </p>
-                            <div class="code-block mt-3">
-                                <div class="code-header"><span>Petición (Cliente ➔ Servidor)</span><span>JSON</span>
+                        <!-- 1.9 TYPING ACTIONS -->
+                        <article class="endpoint-card" id="chat-typing-action">
+                            <div class="endpoint-header">
+                                <div class="endpoint-title">
+                                    <span class="badge-custom badge-emit">EMIT</span>
+                                    <h3>chat.start_typing / chat.stop_typing</h3>
                                 </div>
-                                <pre><code>{
+                            </div>
+                            <div class="endpoint-body">
+                                <p style="color: var(--text-muted);">Notifica el estado de escritura del usuario hacia
+                                    el <code>target_user_id</code>.</p>
+                                <div class="code-block mt-3">
+                                    <div class="code-header"><span>Petición (Cliente ➔ Servidor)</span><span>JSON</span>
+                                    </div>
+                                    <pre><code>{
   "chat_id": "6a022c0a50bf64cf1674e287",
   "user_id": "6727ea0d6f4b3358a701dd7d",
   "target_user_id": "672800e46f4b3358a701fa9c"
 }</code></pre>
+                                </div>
                             </div>
-                        </div>
-                    </article>
-                </section>
+                        </article>
+                    </section>
 
-                <!-- SECTION 2: STREAMS EN TIEMPO REAL -->
-                <section id="streams">
-                    <h2>2. EVENTOS STREAM EN TIEMPO REAL (ESCUCHADORES)</h2>
+                    <!-- SECTION 2: STREAMS EN TIEMPO REAL -->
+                    <section id="streams">
+                        <h2>2. EVENTOS STREAM EN TIEMPO REAL (ESCUCHADORES)</h2>
 
-                    <!-- 2.1 STREAM CHAT MESSAGE -->
-                    <article class="endpoint-card" id="stream-chat-message">
-                        <div class="endpoint-header">
-                            <div class="endpoint-title">
-                                <span class="badge-custom badge-stream">LISTEN</span>
-                                <h3>Evento: chat.message</h3>
+                        <!-- 2.1 STREAM CHAT MESSAGE -->
+                        <article class="endpoint-card" id="stream-chat-message">
+                            <div class="endpoint-header">
+                                <div class="endpoint-title">
+                                    <span class="badge-custom badge-stream">LISTEN</span>
+                                    <h3>Evento: chat.message</h3>
+                                </div>
                             </div>
-                        </div>
-                        <div class="endpoint-body">
-                            <p style="color: var(--text-muted);">Evento pasivo retransmitido por el backend al
-                                <code>target_user_id</code> especificado cuando se procesa, edita o elimina un mensaje.
-                            </p>
-                            <div class="code-block mt-3">
-                                <div class="code-header"><span>Payload Recibido (socket.on("chat.message",
-                                        callback))</span><span>JSON</span></div>
-                                <pre><code>{
+                            <div class="endpoint-body">
+                                <p style="color: var(--text-muted);">Evento pasivo retransmitido por el backend al
+                                    <code>target_user_id</code> especificado cuando se procesa, edita o elimina un
+                                    mensaje.</p>
+                                <div class="code-block mt-3">
+                                    <div class="code-header"><span>Payload Recibido (socket.on("chat.message",
+                                            callback))</span><span>JSON</span></div>
+                                    <pre><code>{
   "type": "response",
   "payload": {
     "id": "67a1b2c3d4e5f67890123457",
@@ -1136,27 +1188,26 @@
     "status": "SENT"
   }
 }</code></pre>
+                                </div>
                             </div>
-                        </div>
-                    </article>
+                        </article>
 
-                    <!-- 2.2 STREAM MESSAGE STATUS -->
-                    <article class="endpoint-card" id="stream-message-status">
-                        <div class="endpoint-header">
-                            <div class="endpoint-title">
-                                <span class="badge-custom badge-stream">LISTEN</span>
-                                <h3>Evento: chat.message_status</h3>
+                        <!-- 2.2 STREAM MESSAGE STATUS -->
+                        <article class="endpoint-card" id="stream-message-status">
+                            <div class="endpoint-header">
+                                <div class="endpoint-title">
+                                    <span class="badge-custom badge-stream">LISTEN</span>
+                                    <h3>Evento: chat.message_status</h3>
+                                </div>
                             </div>
-                        </div>
-                        <div class="endpoint-body">
-                            <p style="color: var(--text-muted);">Evento pasivo retransmitido hacia el
-                                <code>target_user_id</code> (remitente original) notificando la confirmación de entrega
-                                o lectura de sus mensajes.
-                            </p>
-                            <div class="code-block mt-3">
-                                <div class="code-header"><span>Payload Recibido (socket.on("chat.message_status",
-                                        callback))</span><span>JSON</span></div>
-                                <pre><code>{
+                            <div class="endpoint-body">
+                                <p style="color: var(--text-muted);">Evento pasivo retransmitido hacia el
+                                    <code>target_user_id</code> (remitente original) notificando la confirmación de
+                                    entrega o lectura de sus mensajes.</p>
+                                <div class="code-block mt-3">
+                                    <div class="code-header"><span>Payload Recibido (socket.on("chat.message_status",
+                                            callback))</span><span>JSON</span></div>
+                                    <pre><code>{
   "type": "response",
   "payload": {
     "success": true,
@@ -1175,100 +1226,103 @@
     }
   }
 }</code></pre>
+                                </div>
                             </div>
-                        </div>
-                    </article>
+                        </article>
 
-                    <!-- 2.3 STREAM TYPING STATUS -->
-                    <article class="endpoint-card" id="stream-typing-status">
-                        <div class="endpoint-header">
-                            <div class="endpoint-title">
-                                <span class="badge-custom badge-stream">LISTEN</span>
-                                <h3>Evento: chat.typing_status / chat.typing_sender</h3>
+                        <!-- 2.3 STREAM TYPING STATUS -->
+                        <article class="endpoint-card" id="stream-typing-status">
+                            <div class="endpoint-header">
+                                <div class="endpoint-title">
+                                    <span class="badge-custom badge-stream">LISTEN</span>
+                                    <h3>Evento: chat.typing_status / chat.typing_sender</h3>
+                                </div>
                             </div>
-                        </div>
-                        <div class="endpoint-body">
-                            <p style="color: var(--text-muted);">Eventos pasivos retransmitidos por el servidor
-                                únicamente al destinatario del chat (<code>target_user_id</code>) notificando que
-                                alguien está o dejó de escribir.</p>
-                            <div class="code-block mt-3">
-                                <div class="code-header"><span>Payload Recibido (socket.on("chat.typing_status",
-                                        callback))</span><span>JSON</span></div>
-                                <pre><code>{
+                            <div class="endpoint-body">
+                                <p style="color: var(--text-muted);">Eventos pasivos retransmitidos por el servidor
+                                    únicamente al destinatario del chat (<code>target_user_id</code>) notificando que
+                                    alguien está o dejó de escribir.</p>
+                                <div class="code-block mt-3">
+                                    <div class="code-header"><span>Payload Recibido (socket.on("chat.typing_status",
+                                            callback))</span><span>JSON</span></div>
+                                    <pre><code>{
   "type": "response",
   "payload": {
     "status": true
   }
 }</code></pre>
+                                </div>
                             </div>
-                        </div>
-                    </article>
-                </section>
+                        </article>
+                    </section>
 
-                <!-- SECTION 3: EVENTOS DE PRESENCIA -->
-                <section id="presencia">
-                    <h2>3. EVENTOS DE PRESENCIA</h2>
+                    <!-- SECTION 3: EVENTOS DE PRESENCIA -->
+                    <section id="presencia">
+                        <h2>3. EVENTOS DE PRESENCIA</h2>
 
-                    <!-- 3.1 PRESENCE SNAPSHOT -->
-                    <article class="endpoint-card" id="presence-snapshot">
-                        <div class="endpoint-header">
-                            <div class="endpoint-title">
-                                <span class="badge-custom badge-presence">PRESENCIA</span>
-                                <h3>presence.snapshot</h3>
+                        <!-- 3.1 PRESENCE SNAPSHOT -->
+                        <article class="endpoint-card" id="presence-snapshot">
+                            <div class="endpoint-header">
+                                <div class="endpoint-title">
+                                    <span class="badge-custom badge-presence">PRESENCIA</span>
+                                    <h3>presence.snapshot</h3>
+                                </div>
                             </div>
-                        </div>
-                        <div class="endpoint-body">
-                            <p style="color: var(--text-muted);">Solicita la presencia de un listado de usuarios.</p>
-                            <div class="row g-3 mt-1">
-                                <div class="col-12 col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header"><span>Petición (Cliente ➔
-                                                Servidor)</span><span>JSON</span></div>
-                                        <pre><code>{
+                            <div class="endpoint-body">
+                                <p style="color: var(--text-muted);">Solicita la presencia de un listado de usuarios.
+                                </p>
+                                <div class="row g-3 mt-1">
+                                    <div class="col-12 col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header"><span>Petición (Cliente ➔
+                                                    Servidor)</span><span>JSON</span></div>
+                                            <pre><code>{
   "user_ids": [
     "672800e46f4b3358a701fa9c",
     "6931d2081be27e64d77a0059"
   ]
 }</code></pre>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-12 col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header"><span>Respuesta Recibida
-                                                (socket.on("presence.snapshot"))</span><span>JSON</span></div>
-                                        <pre><code>{
+                                    <div class="col-12 col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header"><span>Respuesta Recibida
+                                                    (socket.on("presence.snapshot"))</span><span>JSON</span></div>
+                                            <pre><code>{
   "data": {
     "672800e46f4b3358a701fa9c": true,
     "6931d2081be27e64d77a0059": false
   }
 }</code></pre>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </article>
+                        </article>
 
-                    <!-- 3.2 PRESENCE WATCH -->
-                    <article class="endpoint-card" id="presence-watch">
-                        <div class="endpoint-header">
-                            <div class="endpoint-title">
-                                <span class="badge-custom badge-presence">PRESENCIA</span>
-                                <h3>presence.watch</h3>
-                            </div>
-                        </div>
-                        <div class="endpoint-body">
-                            <p style="color: var(--text-muted);">Suscripción en tiempo real a la presencia de un usuario
-                                específico.</p>
-                            <div class="code-block mt-3">
-                                <div class="code-header"><span>Petición (Cliente ➔ Servidor)</span><span>JSON</span>
+                        <!-- 3.2 PRESENCE WATCH -->
+                        <article class="endpoint-card" id="presence-watch">
+                            <div class="endpoint-header">
+                                <div class="endpoint-title">
+                                    <span class="badge-custom badge-presence">PRESENCIA</span>
+                                    <h3>presence.watch</h3>
                                 </div>
-                                <pre><code>{
+                            </div>
+                            <div class="endpoint-body">
+                                <p style="color: var(--text-muted);">Suscripción en tiempo real a la presencia de un
+                                    usuario específico.</p>
+                                <div class="code-block mt-3">
+                                    <div class="code-header"><span>Petición (Cliente ➔ Servidor)</span><span>JSON</span>
+                                    </div>
+                                    <pre><code>{
   "user_id": "6931d2081be27e64d77a0059"
 }</code></pre>
+                                </div>
                             </div>
-                        </div>
-                    </article>
-                </section>
+                        </article>
+                    </section>
+
+                </div>
 
             </main>
         </div>
@@ -1276,6 +1330,26 @@
 
     <!-- Bootstrap 5.3 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script para cerrar automáticamente el drawer móvil al hacer clic en una opción -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebarMenu = document.getElementById('sidebarMenu');
+            const navLinks = sidebarMenu.querySelectorAll('.nav-link, .nav-list a');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function () {
+                    // Solo actúa si el offcanvas está visible (en pantallas menores a 768px)
+                    if (window.innerWidth < 768) {
+                        const bsOffcanvas = bootstrap.Offcanvas.getInstance(sidebarMenu);
+                        if (bsOffcanvas) {
+                            bsOffcanvas.hide();
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>

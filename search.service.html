@@ -7,53 +7,135 @@
     <title>Search Service - Documentación API Gateway</title>
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --bg-main: #0f172a;
             --bg-card: #1e293b;
+            --bg-code: #090d16;
             --border-color: #334155;
+
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --accent-color: #38bdf8;
-            --code-bg: #090d16;
+            --text-dim: #64748b;
+
+            --accent-primary: #38bdf8;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-purple: #818cf8;
+            --accent-danger: #f43f5e;
         }
 
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
         body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg-main);
             color: var(--text-main);
-            min-height: 100vh;
         }
 
-        /* Sidebar personalizado para escritorio */
+        /* --- SIDEBAR DRAWER PARA ESCRITORIO Y MÓVIL --- */
+        @media (min-width: 768px) {
+            .sidebar.offcanvas-md {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 260px;
+                transform: none;
+                visibility: visible !important;
+                background-color: var(--bg-card);
+                border-right: 1px solid var(--border-color);
+                z-index: 1040;
+                overflow-y: auto;
+            }
+        }
+
         .sidebar {
             background-color: var(--bg-card);
             border-right: 1px solid var(--border-color);
         }
 
+        /* --- HEADER FIJO --- */
+        .app-header-fixed {
+            position: sticky;
+            top: 0;
+            background-color: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1030;
+            padding: 0.75rem 1.5rem;
+        }
+
+        /* --- CONTENEDOR PRINCIPAL CON SCROLL INDEPENDIENTE --- */
+        main.ms-md-auto {
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            padding: 0 !important;
+        }
+
+        .content-body {
+            padding: 2rem;
+            flex: 1;
+        }
+
         /* Logo de marca estilo Cubo Conecta */
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            padding-left: 0.5rem;
+        }
+
         .brand-logo {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
-            border-radius: 8px;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-purple));
+            border-radius: 6px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 6px -1px rgba(56, 189, 248, 0.2);
         }
 
+        .brand-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #fff;
+            letter-spacing: -0.02em;
+        }
+
         /* Tarjetas de Endpoints */
         .endpoint-card {
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: 10px;
+            border-radius: 12px;
             margin-bottom: 1.5rem;
             overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .endpoint-card:hover {
+            border-color: var(--accent-primary);
         }
 
         .endpoint-header {
             padding: 1rem 1.25rem;
             border-bottom: 1px solid var(--border-color);
+            background-color: rgba(255, 255, 255, 0.01);
         }
 
         .badge-post {
@@ -61,33 +143,37 @@
             color: #4ade80;
             font-size: 0.7rem;
             font-weight: 600;
+            border: 1px solid rgba(74, 222, 128, 0.3);
         }
 
         .grpc-ref {
             font-size: 0.75rem;
             color: var(--text-muted);
-            font-family: monospace;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         /* Estilos de navegación lateral */
-        .nav-link {
+        .nav-item a {
+            display: block;
+            padding: 0.4rem 0.6rem;
             color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.875rem;
             border-radius: 6px;
-            font-size: 0.9rem;
-            transition: background 0.2s, color 0.2s;
+            transition: all 0.15s ease;
         }
 
-        .nav-link:hover,
-        .nav-link.active {
+        .nav-item a:hover,
+        .nav-item a.active {
             background-color: rgba(255, 255, 255, 0.05);
             color: var(--text-main) !important;
         }
 
         /* Bloques de código */
         .code-block {
-            background-color: var(--code-bg);
+            background-color: var(--bg-code);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 8px;
             overflow: hidden;
         }
 
@@ -103,14 +189,14 @@
             padding: 1rem;
             margin: 0;
             overflow-x: auto;
-            font-family: monospace;
-            font-size: 0.85rem;
-            color: #38bdf8;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.825rem;
+            color: var(--accent-primary);
         }
 
         .callout {
             background-color: rgba(56, 189, 248, 0.08);
-            border-left: 4px solid var(--accent-color);
+            border-left: 4px solid var(--accent-primary);
             padding: 1rem;
             border-radius: 0 6px 6px 0;
             font-size: 0.9rem;
@@ -124,97 +210,119 @@
     <div class="container-fluid">
         <div class="row">
 
-            <!-- SIDEBAR RESPONSIVO FIJO -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar p-3 collapse position-sticky top-0" id="sidebarMenu"
-                style="height: 100vh; overflow-y: auto;">
-                <div class="pt-3">
-                    <!-- Logo / Identidad visual homologada -->
-                    <div class="d-flex align-items-center gap-2 mb-4">
-                        <div class="brand-logo">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white"
-                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                            </svg>
+            <!-- SIDEBAR DRAWER (OFFCANVAS EN MÓVIL, FIJO EN ESCRITORIO) -->
+            <nav class="offcanvas-md offcanvas-start sidebar p-3" tabindex="-1" id="sidebarMenu"
+                aria-labelledby="sidebarMenuLabel">
+                <div class="offcanvas-header d-md-none pb-2 pt-0 px-0">
+                    <h5 class="offcanvas-title text-white" id="sidebarMenuLabel" style="font-size: 1rem;">Navegación
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                        data-bs-target="#sidebarMenu" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body p-0 flex-column">
+                    <div class="pt-1 w-100">
+                        <div class="brand">
+                            <div class="brand-logo">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white"
+                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                            </div>
+                            <span class="brand-title">Cubo Conecta</span>
                         </div>
-                        <span class="h6 fw-bold mb-0 text-white">Cubo Conecta</span>
-                    </div>
 
-                    <div class="mb-3">
-                        <span class="d-block text-uppercase mb-2"
-                            style="font-size: 0.75rem; letter-spacing: 0.05em; color: var(--text-muted);">Navegación</span>
-                        <ul class="nav flex-column gap-1">
-                            <li class="nav-item"><a class="nav-link py-1 px-2" href="index.html">🏠 Inicio</a></li>
-                            <li class="nav-item"><a class="nav-link py-1 px-2 active" href="search.service.html">🔍
-                                    Search Service</a></li>
-                            <li class="nav-item"><a class="nav-link py-1 px-2" href="chat.service.html">💬 Chat
-                                    Service</a></li>
-                        </ul>
-                    </div>
+                        <div class="mb-3">
+                            <span class="d-block text-uppercase mb-2"
+                                style="font-size: 0.75rem; letter-spacing: 0.05em; color: var(--text-muted);">Microservicios</span>
+                            <ul class="nav flex-column gap-1">
+                                <li class="nav-item"><a class="nav-link py-1 px-2" href="index.html">🏠 Inicio</a></li>
+                                <li class="nav-item"><a class="nav-link py-1 px-2 active" href="search.service.html">🔍
+                                        Search Service</a></li>
+                                <li class="nav-item"><a class="nav-link py-1 px-2" href="chat.service.html">💬 Chat
+                                        Service</a></li>
+                            </ul>
+                        </div>
 
-                    <div class="mb-3">
-                        <span class="d-block text-uppercase fs-7 text-muted mb-2"
-                            style="font-size: 0.75rem; letter-spacing: 0.05em;">API Gateway (Gin)</span>
-                        <ul class="nav flex-column gap-1">
-                            <li class="nav-item"><a class="nav-link py-1 px-2" href="#search-users">POST /users</a></li>
-                            <li class="nav-item"><a class="nav-link py-1 px-2" href="#search-chat-users">POST /chats</a>
-                            </li>
-                            <li class="nav-item"><a class="nav-link py-1 px-2" href="#search-posts">POST /posts</a></li>
-                            <li class="nav-item"><a class="nav-link py-1 px-2" href="#search-comments">POST
-                                    /comments</a></li>
-                        </ul>
+                        <div class="mb-3">
+                            <span class="d-block text-uppercase mb-2"
+                                style="font-size: 0.75rem; letter-spacing: 0.05em; color: var(--text-muted);">API
+                                Gateway (Gin)</span>
+                            <ul class="nav flex-column gap-1">
+                                <li class="nav-item"><a class="nav-link py-1 px-2" href="#search-users">POST /users</a>
+                                </li>
+                                <li class="nav-item"><a class="nav-link py-1 px-2" href="#search-chat-users">POST
+                                        /chats</a></li>
+                                <li class="nav-item"><a class="nav-link py-1 px-2" href="#search-posts">POST /posts</a>
+                                </li>
+                                <li class="nav-item"><a class="nav-link py-1 px-2" href="#search-comments">POST
+                                        /comments</a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </nav>
 
-            <!-- MAIN CONTENT -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            <!-- MAIN CONTENT CONTAINER -->
+            <main class="col-12 col-md-9 ms-md-auto col-lg-10">
 
-                <!-- Botón para desplegar menú en dispositivos móviles -->
-                <div class="d-md-none mb-4">
-                    <button class="btn btn-outline-light btn-sm" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
-                        aria-label="Toggle navigation">
-                        ☰ Menú de Navegación
-                    </button>
-                </div>
-
-                <header class="mb-5">
-                    <h1 class="h2 fw-bold">Search Service</h1>
-                    <p class="text-secondary lead fs-6">Documentación técnica de rutas expuestas por el API Gateway
-                        (Gin) y su conexión con el microservicio gRPC de búsqueda.</p>
+                <!-- HEADER FIJO SUPERIOR -->
+                <header class="app-header-fixed d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-3">
+                        <button class="btn btn-outline-light btn-sm d-md-none" type="button" data-bs-toggle="offcanvas"
+                            data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-label="Toggle navigation">
+                            ☰
+                        </button>
+                        <h2 class="h5 m-0 text-white font-monospace">Search Service Docs</h2>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span
+                            class="badge bg-primary bg-opacity-15 text-primary border border-primary border-opacity-25 px-2 py-1">v1.0</span>
+                    </div>
                 </header>
 
-                <!-- SECTION: API GATEWAY SEARCH ENDPOINTS -->
-                <section id="search-service-docs">
-                    <h2 class="h5 text-info border-bottom pb-2 mb-4">ENDPOINTS HTTP / GIN</h2>
+                <!-- CUERPO DE DOCUMENTACIÓN -->
+                <div class="content-body">
 
-                    <!-- 5.1 SEARCH USERS -->
-                    <article class="endpoint-card" id="search-users">
-                        <div class="endpoint-header d-flex flex-wrap justify-content-between align-items-center gap-2">
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="badge badge-post">POST</span>
-                                <h3 class="h6 font-monospace mb-0 text-white">/api/v1/search/users</h3>
+                    <header class="mb-5">
+                        <h1 class="h2 fw-bold text-white">Search Service</h1>
+                        <p class="text-secondary lead fs-6">Documentación técnica de rutas expuestas por el API Gateway
+                            (Gin) y su conexión con el microservicio gRPC de búsqueda.</p>
+                    </header>
+
+                    <!-- SECTION: API GATEWAY SEARCH ENDPOINTS -->
+                    <section id="search-service-docs">
+                        <h2 class="h5 text-info border-bottom pb-2 mb-4"
+                            style="letter-spacing: 0.05em; font-size: 0.85rem; text-transform: uppercase;">Endpoints
+                            HTTP / Gin</h2>
+
+                        <!-- 5.1 SEARCH USERS -->
+                        <article class="endpoint-card" id="search-users">
+                            <div
+                                class="endpoint-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge badge-post">POST</span>
+                                    <h3 class="h6 font-monospace mb-0 text-white">/api/v1/search/users</h3>
+                                </div>
+                                <span class="grpc-ref">gRPC: SearchService.SearchUsers</span>
                             </div>
-                            <span class="grpc-ref">gRPC: SearchService.SearchUsers</span>
-                        </div>
-                        <div class="endpoint-body p-3 p-md-4">
-                            <p class="text-secondary mb-3">Búsqueda general de perfiles en el sistema por nombre o
-                                username.</p>
-                            <div class="row g-3">
-                                <div class="col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header">Request Body (JSON)</div>
-                                        <pre><code>{
+                            <div class="endpoint-body p-3 p-md-4">
+                                <p class="text-secondary mb-3">Búsqueda general de perfiles en el sistema por nombre o
+                                    username.</p>
+                                <div class="row g-3">
+                                    <div class="col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header">Request Body (JSON)</div>
+                                            <pre><code>{
   "query": "Juan",
   "page": 1,
   "size": 10
 }</code></pre>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header">Response (JSON)</div>
-                                        <pre><code>{
+                                    <div class="col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header">Response (JSON)</div>
+                                            <pre><code>{
   "users": [
     {
       "id": "672800e46f4b3358a701fa9c",
@@ -227,44 +335,45 @@
   "total": 1,
   "has_next_page": false
 }</code></pre>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </article>
+                        </article>
 
-                    <!-- 5.2 SEARCH CHAT USERS -->
-                    <article class="endpoint-card" id="search-chat-users">
-                        <div class="endpoint-header d-flex flex-wrap justify-content-between align-items-center gap-2">
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="badge badge-post">POST</span>
-                                <h3 class="h6 font-monospace mb-0 text-white">/api/v1/search/chats</h3>
+                        <!-- 5.2 SEARCH CHAT USERS -->
+                        <article class="endpoint-card" id="search-chat-users">
+                            <div
+                                class="endpoint-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge badge-post">POST</span>
+                                    <h3 class="h6 font-monospace mb-0 text-white">/api/v1/search/chats</h3>
+                                </div>
+                                <span class="grpc-ref">gRPC: SearchService.SearchChatUsers</span>
                             </div>
-                            <span class="grpc-ref">gRPC: SearchService.SearchChatUsers</span>
-                        </div>
-                        <div class="endpoint-body p-3 p-md-4">
-                            <p class="text-secondary mb-3">Búsqueda enfocada al autocompletado para chats, aplicando
-                                restricciones de edad, roles y bloqueos.</p>
+                            <div class="endpoint-body p-3 p-md-4">
+                                <p class="text-secondary mb-3">Búsqueda enfocada al autocompletado para chats, aplicando
+                                    restricciones de edad, roles y bloqueos.</p>
 
-                            <div class="callout mb-3">
-                                <strong>Nota de Arquitectura:</strong> Gestionado en el controlador
-                                <code>search.SearchController.SearchChatUsers-fm</code> a través del API Gateway.
-                            </div>
+                                <div class="callout mb-3">
+                                    <strong>Nota de Arquitectura:</strong> Gestionado en el controlador
+                                    <code>search.SearchController.SearchChatUsers-fm</code> a través del API Gateway.
+                                </div>
 
-                            <div class="row g-3">
-                                <div class="col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header">Request Body (JSON)</div>
-                                        <pre><code>{
+                                <div class="row g-3">
+                                    <div class="col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header">Request Body (JSON)</div>
+                                            <pre><code>{
   "query": "Ana",
   "size": 15
 }</code></pre>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header">Response (JSON)</div>
-                                        <pre><code>{
+                                    <div class="col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header">Response (JSON)</div>
+                                            <pre><code>{
   "users": [
     {
       "id": "6727ea0d6f4b3358a701dd7d",
@@ -275,39 +384,40 @@
     }
   ]
 }</code></pre>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </article>
+                        </article>
 
-                    <!-- 5.3 SEARCH POSTS -->
-                    <article class="endpoint-card" id="search-posts">
-                        <div class="endpoint-header d-flex flex-wrap justify-content-between align-items-center gap-2">
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="badge badge-post">POST</span>
-                                <h3 class="h6 font-monospace mb-0 text-white">/api/v1/search/posts</h3>
+                        <!-- 5.3 SEARCH POSTS -->
+                        <article class="endpoint-card" id="search-posts">
+                            <div
+                                class="endpoint-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge badge-post">POST</span>
+                                    <h3 class="h6 font-monospace mb-0 text-white">/api/v1/search/posts</h3>
+                                </div>
+                                <span class="grpc-ref">gRPC: SearchService.SearchPosts</span>
                             </div>
-                            <span class="grpc-ref">gRPC: SearchService.SearchPosts</span>
-                        </div>
-                        <div class="endpoint-body p-3 p-md-4">
-                            <p class="text-secondary mb-3">Búsqueda de texto completo dentro de publicaciones con autor,
-                                multimedia, contadores e interacciones.</p>
-                            <div class="row g-3">
-                                <div class="col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header">Request Body (JSON)</div>
-                                        <pre><code>{
+                            <div class="endpoint-body p-3 p-md-4">
+                                <p class="text-secondary mb-3">Búsqueda de texto completo dentro de publicaciones con
+                                    autor, multimedia, contadores e interacciones.</p>
+                                <div class="row g-3">
+                                    <div class="col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header">Request Body (JSON)</div>
+                                            <pre><code>{
   "query": "tecnología",
   "page": 1,
   "size": 10
 }</code></pre>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header">Response (JSON)</div>
-                                        <pre><code>{
+                                    <div class="col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header">Response (JSON)</div>
+                                            <pre><code>{
   "posts": [
     {
       "id": "67a1b2c3d4e5f67890123499",
@@ -345,39 +455,40 @@
   "total": 1,
   "has_next_page": false
 }</code></pre>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </article>
+                        </article>
 
-                    <!-- 5.4 SEARCH COMMENTS -->
-                    <article class="endpoint-card" id="search-comments">
-                        <div class="endpoint-header d-flex flex-wrap justify-content-between align-items-center gap-2">
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="badge badge-post">POST</span>
-                                <h3 class="h6 font-monospace mb-0 text-white">/api/v1/search/comments</h3>
+                        <!-- 5.4 SEARCH COMMENTS -->
+                        <article class="endpoint-card" id="search-comments">
+                            <div
+                                class="endpoint-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge badge-post">POST</span>
+                                    <h3 class="h6 font-monospace mb-0 text-white">/api/v1/search/comments</h3>
+                                </div>
+                                <span class="grpc-ref">gRPC: SearchService.SearchComments</span>
                             </div>
-                            <span class="grpc-ref">gRPC: SearchService.SearchComments</span>
-                        </div>
-                        <div class="endpoint-body p-3 p-md-4">
-                            <p class="text-secondary mb-3">Búsqueda de texto dentro de comentarios asociados a posts o
-                                stories mediante <code>target_id</code> y <code>target_type</code>.</p>
-                            <div class="row g-3">
-                                <div class="col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header">Request Body (JSON)</div>
-                                        <pre><code>{
+                            <div class="endpoint-body p-3 p-md-4">
+                                <p class="text-secondary mb-3">Búsqueda de texto dentro de comentarios asociados a posts
+                                    o stories mediante <code>target_id</code> y <code>target_type</code>.</p>
+                                <div class="row g-3">
+                                    <div class="col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header">Request Body (JSON)</div>
+                                            <pre><code>{
   "query": "excelente",
   "page": 1,
   "size": 10
 }</code></pre>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-xl-6">
-                                    <div class="code-block">
-                                        <div class="code-header">Response (JSON)</div>
-                                        <pre><code>{
+                                    <div class="col-xl-6">
+                                        <div class="code-block">
+                                            <div class="code-header">Response (JSON)</div>
+                                            <pre><code>{
   "comments": [
     {
       "id": "67a1b2c3d4e5f67890123500",
@@ -392,19 +503,40 @@
   "total": 1,
   "has_next_page": false
 }</code></pre>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </article>
+                        </article>
 
-                </section>
+                    </section>
+                </div>
+
             </main>
         </div>
     </div>
 
     <!-- Bootstrap 5.3 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script para cerrar automáticamente el drawer móvil al hacer clic en una opción -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebarMenu = document.getElementById('sidebarMenu');
+            const navLinks = sidebarMenu.querySelectorAll('.nav-link');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function () {
+                    if (window.innerWidth < 768) {
+                        const bsOffcanvas = bootstrap.Offcanvas.getInstance(sidebarMenu);
+                        if (bsOffcanvas) {
+                            bsOffcanvas.hide();
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
